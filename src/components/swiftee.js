@@ -30,7 +30,11 @@
      `in` is a one-shot lead-in; `loop` is held for as long as the state
      lasts. `flip` is the direction the pose reads in, used when the
      caller does not care. `bob` is the gentle idle sway, switched off
-     for clips that already carry their own weight.
+     for clips that already carry their own weight. `sfx` is the voice the
+     expression speaks in — queued, so a stage sounding its own beat right
+     after (`set('celebrate')` then `sfx('win')`) cancels it rather than
+     doubling up. `idle` has none on purpose: it is where every movement
+     ends, so a voice there would sound on every step of the lesson.
 
      Several states share a clip on purpose — Swiftee has no separate
      "sad" or "wrong" pose, and a lesson is better for it: a miss reads
@@ -38,45 +42,45 @@
   const STATE = {
     /* presence */
     idle:        { loop: 'blinking' },
-    walk:        { loop: 'flapping', fps: 24, bob: false },
-    listening:   { loop: 'listening' },
+    walk:        { loop: 'flapping', fps: 24, bob: false, sfx: 'flap' },
+    listening:   { loop: 'listening', sfx: 'gesture' },
 
     /* thought */
-    thinking:    { loop: 'thinking' },
-    pondering:   { loop: 'thinking', fps: 12 },
-    curious:     { loop: 'curious' },
-    measuring:   { loop: 'focussed' },
-    determined:  { loop: 'confident' },
+    thinking:    { loop: 'thinking', sfx: 'muse' },
+    pondering:   { loop: 'thinking', fps: 12, sfx: 'muse' },
+    curious:     { loop: 'curious', sfx: 'hm' },
+    measuring:   { loop: 'focussed', sfx: 'focus' },
+    determined:  { loop: 'confident', sfx: 'steady' },
 
     /* speaking to the learner */
-    explaining:  { loop: 'talking' },
-    teaching:    { in: 'talk_start', loop: 'talking' },
+    explaining:  { loop: 'talking', sfx: 'gesture' },
+    teaching:    { in: 'talk_start', loop: 'talking', sfx: 'gesture' },
 
     /* directing attention — the raised wing carries the direction,
        so left and right are the same clip, mirrored              */
-    'point-left':  { in: 'wave_start', loop: 'waving', flip: false },
-    'point-right': { in: 'wave_start', loop: 'waving', flip: true },
-    presenting:    { in: 'wave_start', loop: 'waving' },
-    split:         { in: 'wave_start', loop: 'waving' },
+    'point-left':  { in: 'wave_start', loop: 'waving', flip: false, sfx: 'gesture' },
+    'point-right': { in: 'wave_start', loop: 'waving', flip: true,  sfx: 'gesture' },
+    presenting:    { in: 'wave_start', loop: 'waving', sfx: 'warm' },
+    split:         { in: 'wave_start', loop: 'waving', sfx: 'gesture' },
 
     /* the beats */
-    surprised:   { in: 'surprised_start', loop: 'surprised' },
-    realization: { in: 'surprised_start', loop: 'surprised' },
-    confused:    { in: 'confused_start', loop: 'confused' },
-    incorrect:   { in: 'confused_start', loop: 'confused' },
-    wink:        { in: 'playful_start', loop: 'playful' },
-    hint:        { in: 'playful_start', loop: 'playful' },
+    surprised:   { in: 'surprised_start', loop: 'surprised', sfx: 'oh' },
+    realization: { in: 'surprised_start', loop: 'surprised', sfx: 'aha' },
+    confused:    { in: 'confused_start', loop: 'confused', sfx: 'doubt' },
+    incorrect:   { in: 'confused_start', loop: 'confused', sfx: 'doubt' },
+    wink:        { in: 'playful_start', loop: 'playful', sfx: 'spark' },
+    hint:        { in: 'playful_start', loop: 'playful', sfx: 'spark' },
 
     /* the rewards, in three sizes */
-    happy:       { in: 'happy_start', loop: 'happy' },
-    correct:     { in: 'happy_start', loop: 'happy' },
+    happy:       { in: 'happy_start', loop: 'happy', sfx: 'warm' },
+    correct:     { in: 'happy_start', loop: 'happy', sfx: 'warm' },
     /* encouraging follows a miss, so it wants a warm face looking at the
        learner rather than the neutral narration of `talking` */
-    encouraging: { in: 'happy_start', loop: 'happy' },
-    thumbs:      { in: 'proud_start', loop: 'proud' },
-    proud:       { in: 'proud_start', loop: 'proud' },
-    excited:     { loop: 'excited', bob: false },
-    celebrate:   { in: 'celebrate_start', loop: 'celebrating', bob: false }
+    encouraging: { in: 'happy_start', loop: 'happy', sfx: 'warm' },
+    thumbs:      { in: 'proud_start', loop: 'proud', sfx: 'chest' },
+    proud:       { in: 'proud_start', loop: 'proud', sfx: 'chest' },
+    excited:     { loop: 'excited', bob: false, sfx: 'buzz' },
+    celebrate:   { in: 'celebrate_start', loop: 'celebrating', bob: false, sfx: 'cheer' }
   };
 
   /* ---------- clip streaming ----------
@@ -196,6 +200,7 @@
 
       this.state = name;
       this.flip = flip;
+      if (def.sfx) NL.Sound.playExpression(def.sfx);
       this.flipEl.style.transform = `scaleX(${flip ? -1 : 1})`;
       this.bob(def.bob !== false);
 

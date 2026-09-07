@@ -75,31 +75,39 @@
 }
 
 /* ============================================================
-   Composition: a 1400 x 940 canvas floating in the world
+   Composition: a 1408 x 952 canvas floating in the world.
+
+   The panel's own coordinate space is a FIXED 1280 x 720 — every stage's
+   geometry and every UI offset is written in it — so the panel cannot be
+   made bigger by resizing it. It is made bigger by giving it more of the
+   canvas: the side margins and the heading band are the only slack, and
+   both have been trimmed to the least the heading actually needs. The
+   whole stage is then scaled to fit, so the panel lands ~12% larger in
+   area on the same screen.
    ============================================================ */
 #app { position: fixed; inset: 0; overflow: hidden; z-index: 1; }
 
 #stage {
   position: absolute; left: 50%; top: 50%;
-  width: 1520px; height: 1010px;
+  width: 1408px; height: 952px;
   transform-origin: 50% 50%;
   user-select: none;
 }
 
 /* --- lesson heading, set on the world above the panel --- */
 #lesson-head {
-  position: absolute; left: 120px; top: 92px; width: 1280px;
+  position: absolute; left: 64px; top: 34px; width: 1280px;
   text-align: center; pointer-events: none;
 }
 #lesson-title {
-  margin: 0; font-size: 44px; line-height: 1.1; font-weight: var(--fw-black);
+  margin: 0; font-size: 40px; line-height: 1.1; font-weight: var(--fw-black);
   letter-spacing: -.02em; color: var(--world-ink);
   text-shadow: 0 1px 0 rgba(255,245,230,.6);
   opacity: 0; transform: translateY(10px);
   transition: opacity 460ms var(--ease-out), transform 520ms var(--ease-out);
 }
 #lesson-sub {
-  margin: 12px 0 0; font-size: 24px; line-height: 1.3; font-weight: var(--fw-bold);
+  margin: 10px 0 0; font-size: 22px; line-height: 1.3; font-weight: var(--fw-bold);
   color: var(--world-ink-2);
   text-shadow: 0 1px 0 rgba(255,245,230,.5);
   opacity: 0; transform: translateY(8px);
@@ -113,7 +121,7 @@
 
 /* --- the learning panel --- */
 #card {
-  position: absolute; left: 120px; top: 212px;
+  position: absolute; left: 64px; top: 148px;
   width: 1280px; height: 720px;
   border-radius: 30px;
   overflow: hidden;
@@ -149,7 +157,7 @@
 
 /* --- Swiftee shares the panel's coordinates, without its clipping --- */
 #swiftee-space {
-  position: absolute; left: 120px; top: 212px;
+  position: absolute; left: 64px; top: 148px;
   width: 1280px; height: 720px;
   overflow: visible; pointer-events: none; z-index: 6;
 }

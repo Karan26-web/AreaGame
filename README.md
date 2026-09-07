@@ -18,12 +18,18 @@ Swiftee able to step outside it onto the ground.
 
 ```
 world (full viewport)          assets/mars-plate.webp, drawn as three clipped bands
-└── canvas 1520 x 1010         uniformly scaled + centred
+└── canvas 1408 x 952          uniformly scaled + centred
     ├── heading                stage title + subtitle, set on the sky
     ├── #card 1280 x 720       the learning panel — every stage's coordinate space
     │   └── #progress          a 4px hairline along its foot — no numbers, no labels
     └── #swiftee-space         the panel's coordinates, without its clipping
 ```
+
+The panel cannot be resized to make it bigger: its 1280 x 720 space is where
+every stage's geometry and every UI offset is written. It is made bigger by
+giving it more of the canvas — the side margins and the heading band are the
+only slack, and both are trimmed to the least the heading needs, which lands
+the panel about 12% larger in area on the same screen.
 
 ### The panel is a place
 
@@ -83,7 +89,30 @@ the world → the heading writes itself → the lesson begins. About five second
 not by waveform — `playUI`, `playCharacter`, `playShape`, `playSuccess`,
 `playError`, `playHint`, `playDiscovery`, `playTransition`, `playComplete`.
 Components ask for an event; the manager owns the tone and the mix level, and
-one toggle silences everything without changing any behaviour.
+one toggle silences everything without changing any behaviour. Each group has
+its own gain node, so the mix in `GAIN` is real rather than decorative.
+
+### Swiftee has a voice
+
+`playExpression` is the character's own register: 14 short non-verbal motifs,
+one per feeling, wired to the states in `swiftee.js` so a change of face is
+also a change of tone — a question rises (`hm`), a doubt falls (`doubt`), a
+realisation opens upward (`aha`), confidence sits on a bare fifth (`chest`).
+They are deliberately **off** the lesson's mathematical pitches, so a feeling
+can never be mistaken for a statement about the shape.
+
+Two rules keep it from becoming noise:
+
+* **an expression is queued, not played.** Stages set a state and then sound
+  the beat themselves — `set('celebrate')` then `sfx('win')` — so playing
+  immediately would double every reward. A 90 ms hold lets the louder voice
+  arrive and cancel the expression; alone, it plays imperceptibly late.
+* **the same feeling twice in a breath is suppressed.** `confused` and
+  `incorrect` share a voice, and hearing it twice reads as a stutter, not as
+  emphasis.
+
+`idle` has no voice on purpose: it is where every movement ends, so a sound
+there would fire on every step of the lesson.
 
 ---
 
@@ -124,8 +153,19 @@ One palette, four roles, applied everywhere:
 |---|---|---|
 | shape body | pale yellow `#faefa6` with a deep-green `#2f5d34` outline | every polygon |
 | parallel sides (a, b) | deep green `#2f5d34`, italic labels, mid-edge arrows | edges, labels, `<em>` in a subtitle |
-| perpendicular height (h) | violet `#6849c9`, dashed, right-angle marker | never confusable with a parallel side |
-| interaction | teal `#159289` (Swiftee's own plumage) | CTAs, selection |
+| perpendicular height (h) | violet `#5a3cb8`, dashed, right-angle marker | never confusable with a parallel side |
+| interaction | teal, Swiftee's own plumage — `--accent #159289` for marks, `--brand #0b6f69` for buttons | tap hints and selection · CTAs |
+
+Interaction is one hue split by the job it does, because the two jobs have
+different contrast bars. `--accent` only ever marks the diagram, so it answers
+to the 3:1 for graphics and stays vivid. `--brand` is a surface carrying white
+19px and 16px type, so **both** gradient stops have to clear 4.5:1 alone — a
+light, candy teal cannot, which is the usual way a button ends up unreadable.
+
+The three inks are all legible on the card: `--ink` 16.4:1, `--ink-2` 7.3:1,
+`--ink-3` 5.4:1. `--ink-3` is the one that matters — it carries the 14-18px
+captions, shape names, formula operators and step numbers, and at its old
+value it was 3.0:1, which made the names under the diagrams guesswork.
 
 Feedback borrows the same green for *correct* and a warm amber for *look
 again* — never red. A stage's subtitle uses `<em>` / `<em class="h">` so the
@@ -199,6 +239,23 @@ keep: ['hero']
 That is why the trapezium in stages 06→10 never moves, never re-fades and
 keeps the tint it gained when the learner first filled it — labels,
 copies and dimensions arrive around a shape that stays put.
+
+### Board elements arrive one at a time
+
+Shapes and edges have their own entrances (`G.popIn`, and the stroke-drawing
+in `NL.Anim`), but the decorations — labels, chevrons, tick marks, right
+angles, dimension lines — used to be appended straight into the SVG and simply
+blinked into existence, several at once. `G.parallelMark`, `G.tickMark`,
+`G.rightAngle`, `G.dimension` and `G.label` are now wrapped so whatever they
+return rises and settles on its own beat.
+
+The stagger is automatic rather than per call site: everything built in the
+same frame joins one queue and enters in the order it was made, so a stage says
+what it wants on the board and the board leads the eye through it. The step
+shortens as the queue grows, so eight marks still read as a sequence without
+stalling the lesson. `G.raw.*` keeps the unwrapped builders for anything that
+needs to drive its own timing, and an element that is not in the document by
+the next frame is left alone — the stage is holding it back deliberately.
 
 ### Swiftee
 

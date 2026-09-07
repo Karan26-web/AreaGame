@@ -13,8 +13,10 @@
 
   const stages = [];
 
-  /* the composition canvas: heading + panel + a strip of Mars below */
-  const CANVAS = { w: 1520, h: 1010 };
+  /* The composition canvas: heading + panel + a strip of Mars below.
+     Must match #stage in world.css — the panel's own 1280x720 space is
+     fixed, so this is the frame that decides how big the panel lands. */
+  const CANVAS = { w: 1408, h: 952 };
 
   const Stage = {
     scale: 1,

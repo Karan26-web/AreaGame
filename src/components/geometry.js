@@ -177,7 +177,6 @@
         'text-anchor': 'middle', 'dominant-baseline': 'middle', text: o.label
       }));
     }
-    g.__line = line;
     return g;
   }
 
@@ -198,7 +197,6 @@
         'dominant-baseline': 'middle', text: o.label
       }));
     }
-    g.__line = l;
     return g;
   }
 
@@ -241,6 +239,68 @@
     }, delay));
   }
 
+
+  /* ---------- board elements arrive one at a time ----------
+     Shapes and edges already have their own entrances (`popIn`, and the
+     stroke-drawing in NL.Anim), but the DECORATIONS — labels, chevrons,
+     tick marks, right angles, dimension lines — used to be appended
+     straight into the SVG and simply blinked into existence, several at
+     once. Each now rises and settles on its own beat.
+
+     The stagger is automatic rather than per call site: everything born
+     in the same frame joins one queue and enters in the order it was
+     built, so a stage says what it wants on the board and the board leads
+     the eye through it. The step shortens as the queue grows, so a burst
+     of eight marks still reads as a sequence without stalling the lesson.
+
+     An element that is not in the document by the next frame is left
+     alone — the stage is holding it back for its own choreography, and
+     guessing would fight it. */
+  const STEP = 88, STEP_2 = 44, KNEE = 5;
+  let queue = 0, queueRaf = null;
+
+  function slot() {
+    const i = queue++;
+    if (!queueRaf) queueRaf = requestAnimationFrame(() => { queue = 0; queueRaf = null; });
+    return i <= KNEE ? i * STEP : KNEE * STEP + (i - KNEE) * STEP_2;
+  }
+
+  /* fade + rise, scaled about the element's own middle so a chevron grows
+     out of the edge it belongs to rather than sliding in from nowhere */
+  function entrance(node, o) {
+    o = o || {};
+    const delay = o.delay === undefined ? slot() : o.delay;
+    const dur = o.dur || 330, dy = o.dy === undefined ? 7 : o.dy;
+    node.style.opacity = 0;
+    let c = null;
+    const set = t => {
+      node.style.opacity = Math.min(1, t * 1.5);
+      const y = (1 - t) * dy;
+      if (c) {
+        const k = .86 + .14 * t;
+        node.setAttribute('transform',
+          `translate(${c.x},${c.y + y}) scale(${k}) translate(${-c.x},${-c.y})`);
+      } else node.setAttribute('transform', `translate(0,${y.toFixed(2)})`);
+    };
+    set(0);
+    /* clearing the inline value rather than forcing 1 matters: a stage may
+       have dimmed this element while the entrance was still queued, and
+       that intent has to survive */
+    const done = () => { node.style.removeProperty('opacity'); node.removeAttribute('transform'); };
+    setTimeout(() => {
+      if (!node.isConnected) return done();
+      try {
+        const b = node.getBBox();
+        if (b.width || b.height) c = { x: b.x + b.width / 2, y: b.y + b.height / 2 };
+      } catch (e) { /* not measurable yet; a plain rise still reads */ }
+      NL.Anim.tween(dur, set, { ease: 'out' }).then(done);
+    }, delay);
+    return node;
+  }
+
+  /* wrap a builder so whatever it returns enters on its own beat */
+  const staged = fn => function () { return entrance(fn.apply(null, arguments)); };
+
   /* an inline mini diagram for cards / recap rows */
   function miniSvg(w, hgt, build, cls) {
     const svg = s('svg', { width: w, height: hgt, viewBox: `0 0 ${w} ${hgt}`, class: cls || '' });
@@ -251,6 +311,12 @@
   NL.Geo = {
     P, str, sub, add, mul, len, norm, perp, mid, bbox,
     trap, para, rect, tri, kite,
-    poly, edge, hit, parallelMark, tickMark, rightAngle, dimension, heightLine, midHeight, label, miniSvg, popIn
+    poly, edge, hit, heightLine, midHeight, miniSvg, popIn, entrance,
+    /* the decorations stage themselves; the raw builders stay reachable
+       for the few places that drive their own timing */
+    parallelMark: staged(parallelMark), tickMark: staged(tickMark),
+    rightAngle:   staged(rightAngle),   dimension: staged(dimension),
+    label:        staged(label),
+    raw: { parallelMark, tickMark, rightAngle, dimension, label }
   };
 })(window.NL);

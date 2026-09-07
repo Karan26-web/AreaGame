@@ -11,25 +11,39 @@
   --line:        #e3e7de;
   --line-soft:   #eff2ec;
 
-  /* Ink */
-  --ink:         #17221a;
-  --ink-2:       #4c5a4f;
-  --ink-3:       #8b978d;
+  /* Ink — three weights, all of them legible.
+     --ink-3 carries the small stuff (14-18px captions, shape names,
+     formula operators, step numbers), so it is the one that has to hold
+     up: at #8b978d it was 3.0:1 on the card and the shape names under the
+     diagrams were guesswork. */
+  --ink:         #17221a;   /* 16.4:1 — headings, answers   */
+  --ink-2:       #4c5a4f;   /*  7.3:1 — body, dimensions    */
+  --ink-3:       #5f6e63;   /*  5.4:1 — captions, operators */
 
-  /* Brand (tuned to Swiftee's teal plumage, and kept clear of the
-     diagram greens below — same contrast as the palette it replaced) */
-  --brand:       #159289;
-  --brand-lift:  #22a89b;   /* the lit top of a button           */
-  --brand-deep:  #0c6b66;
+  /* Swiftee's teal, split by the job it does — deliberately kept clear of
+     the diagram greens below.
+
+     --accent marks things ON the diagram (tap hints, selection borders).
+     Nothing sets type in it, so its bar is the 3:1 for graphics, and it
+     stays vivid.
+
+     --brand is a surface that carries WHITE 19px and 16px type, so BOTH
+     gradient stops have to clear 4.5:1 by themselves — a light, candy
+     teal cannot, which is the usual way a button ends up unreadable. */
+  --accent:      #159289;   /* marks: 3.8:1 on white        */
+  --accent-soft: #e2f4f1;
+  --brand-lift:  #107f78;   /* lit top of a button, white 4.9:1 */
+  --brand:       #0b6f69;   /* white 6.0:1                      */
+  --brand-deep:  #064b48;
   --brand-soft:  #e2f4f1;
-  --brand-rgb:   12, 107, 102;
+  --brand-rgb:   6, 75, 72;
 
   /* Diagram language — each role has ONE consistent colour */
   --para:        #2f5d34;   /* parallel sides (a, b)        */
   --para-soft:   #e7f1e6;
-  --hgt:         #6849c9;   /* perpendicular height (h)     */
+  --hgt:         #5a3cb8;   /* perpendicular height (h)     */
   --hgt-soft:    #ece7fb;
-  --slant:       #9aa79c;   /* non-parallel / slanted sides */
+  --slant:       #7d8a80;   /* non-parallel / slanted sides */
   --shape-line:  #2f5d34;
   --shape-fill:  #faefa6;
   --shape-fill2: #cfe2f7;   /* the mirrored copy            */

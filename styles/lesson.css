@@ -28,7 +28,7 @@ body {
 
 /* ---------- the only persistent control ---------- */
 .icon-btn {
-  position: absolute; top: 34px; right: 120px; z-index: 8;
+  position: absolute; top: 26px; right: 64px; z-index: 8;
   width: 34px; height: 34px; border-radius: 12px; border: none;
   background: rgba(255,252,246,.62); color: var(--world-ink-2); cursor: pointer;
   display: grid; place-items: center; padding: 0;
@@ -138,7 +138,7 @@ body {
 .shape-card svg { position: relative; z-index: 1; }
 .shape-card:hover:not(.locked) { transform: translateY(-4px); }
 .shape-card:hover:not(.locked)::after { background: rgba(47,93,52,.045); }
-.shape-card.sel::after     { border-color: var(--brand); background: var(--brand-soft); }
+.shape-card.sel::after     { border-color: var(--accent); background: var(--accent-soft); }
 .shape-card.is-ok::after   { border-color: var(--ok); background: var(--ok-soft); }
 .shape-card.is-look::after { border-color: var(--warn); background: var(--warn-soft); animation: look 1.5s var(--ease) 2; }
 .shape-card.locked   { cursor: default; }
@@ -170,7 +170,7 @@ body {
 }
 .chip:hover:not(.placed) { transform: translateY(-3px); box-shadow: var(--sh-2); border-color: #cdbda1; }
 .chip.lifted { cursor: grabbing; box-shadow: var(--sh-3); transform: scale(1.06) rotate(-1.5deg); z-index: 40; transition: none; }
-.chip.armed  { border-color: var(--brand); background: var(--brand-soft); }
+.chip.armed  { border-color: var(--accent); background: var(--accent-soft); }
 .chip.placed { cursor: default; border-color: var(--ok); background: #fff; color: var(--ok); }
 .chip.nudge  { animation: nudge .45s var(--ease); }
 @keyframes nudge {
@@ -188,7 +188,7 @@ body {
   transition: all var(--t-fast) var(--ease);
 }
 .slot.inline { position: static; display: inline-block; vertical-align: middle; margin: 0 4px; }
-.slot.hot   { border-color: var(--brand); background: var(--brand-soft); transform: scale(1.05); }
+.slot.hot   { border-color: var(--accent); background: var(--accent-soft); transform: scale(1.05); }
 .slot.full  { border-color: transparent; background: transparent; }
 
 /* ---------- Panels, callouts, feedback ---------- */
@@ -370,9 +370,9 @@ body {
 .edge.hgt { stroke: var(--hgt); stroke-dasharray: 10 8; stroke-width: 4; }
 .edge.slant { stroke: var(--warn); }
 .edge.soft{ stroke: var(--slant); }
-/* the brand teal is the interaction colour, on the diagram as in the UI */
+/* the accent teal is the interaction colour on the diagram */
 .edge.tapzone {
-  stroke: var(--brand); stroke-width: 8; stroke-linecap: round;
+  stroke: var(--accent); stroke-width: 8; stroke-linecap: round;
   transition: opacity 200ms var(--ease), stroke-width 200ms var(--ease);
 }
 @keyframes tapPulse {

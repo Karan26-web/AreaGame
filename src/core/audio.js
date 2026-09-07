@@ -7,7 +7,15 @@
    ============================================================ */
 (function (NL) {
   let ctx = null, bus = null, enabled = true;
-  const GAIN = { ui: .55, character: .6, shape: .62, success: .8, error: .55, discovery: .85, transition: .4 };
+  /* expression sits under everything: it is the character's breathing,
+     not an event the learner has to hear */
+  const GAIN = { ui: .55, character: .6, shape: .62, success: .8, error: .55,
+                 discovery: .85, transition: .4, expression: .40 };
+  /* one persistent node per group, and the node the current voice writes
+     into. Setting bus.gain per call would not work: the value is restored
+     in the same tick, long before the graph renders a single sample.   */
+  const nodes = {};
+  let dest = null;
 
   function boot() {
     if (ctx) return;
@@ -17,6 +25,13 @@
     bus = ctx.createGain();
     bus.gain.value = .085;                       /* deliberately quiet */
     bus.connect(ctx.destination);
+    for (const k in GAIN) {
+      const g = ctx.createGain();
+      g.gain.value = GAIN[k] / .6;               /* .6 is the reference group */
+      g.connect(bus);
+      nodes[k] = g;
+    }
+    dest = bus;
   }
 
   /* ---------- primitives ---------- */
@@ -33,8 +48,8 @@
     osc.connect(g);
     if (o.pan !== undefined && ctx.createStereoPanner) {
       const p = ctx.createStereoPanner(); p.pan.value = o.pan;
-      g.connect(p); p.connect(bus);
-    } else g.connect(bus);
+      g.connect(p); p.connect(dest);
+    } else g.connect(dest);
     osc.start(t0); osc.stop(t0 + o.d + .03);
   }
 
@@ -56,7 +71,7 @@
     g.gain.setValueAtTime(0, t0);
     g.gain.linearRampToValueAtTime(o.g === undefined ? .25 : o.g, t0 + len * .25);
     g.gain.linearRampToValueAtTime(0, t0 + len);
-    src.connect(bp); bp.connect(g); g.connect(bus);
+    src.connect(bp); bp.connect(g); g.connect(dest);
     src.start(t0); src.stop(t0 + len + .02);
   }
 
@@ -107,6 +122,27 @@
       noise({ f: 2600, to: 6000, d: .8, g: .06, q: 3 });
     },
 
+    /* ---------- the character's expressions ----------
+       Non-verbal, short, and deliberately OFF the lesson's mathematical
+       pitches (D5 587.33, A5 880, C5 523.25) so a feeling can never be
+       mistaken for a statement about the shape. Each one is a gesture in
+       two or three notes: a question rises, a doubt falls, a realisation
+       opens upward, and confidence sits on a bare fifth.               */
+    hm:       () => { tone({ f: 392, d: .1, g: .22, type: 'triangle' }); tone({ f: 466.16, at: .1, d: .16, g: .2, type: 'triangle' }); },
+    muse:     () => { tone({ f: 294, d: .5, g: .13, a: .12 }); tone({ f: 349.23, at: .26, d: .34, g: .09 }); },
+    doubt:    () => { tone({ f: 440, to: 370, d: .22, g: .2, type: 'triangle' }); tone({ f: 311, at: .16, d: .2, g: .13 }); },
+    oh:       () => { tone({ f: 494, to: 740, d: .13, g: .26 }); },
+    aha:      () => [587.33, 740, 988].forEach((f, i) => tone({ f, at: i * .06, d: .24, g: .22 })),
+    warm:     () => { tone({ f: 523.25, d: .16, g: .22 }); tone({ f: 659.25, at: .09, d: .24, g: .18 }); },
+    chest:    () => { tone({ f: 349.23, d: .2, g: .2 }); tone({ f: 523.25, at: .1, d: .3, g: .17 }); },
+    spark:    () => { tone({ f: 1174.7, d: .07, g: .18 }); tone({ f: 1568, at: .06, d: .14, g: .13 }); },
+    steady:   () => { tone({ f: 261.63, d: .12, g: .22, type: 'triangle' }); tone({ f: 392, at: .11, d: .22, g: .2, type: 'triangle' }); },
+    focus:    () => tone({ f: 698.46, d: .42, g: .12, a: .14 }),
+    gesture:  () => tone({ f: 622.25, d: .1, g: .2, type: 'triangle' }),
+    buzz:     () => [659.25, 831, 1046.5].forEach((f, i) => tone({ f, at: i * .045, d: .16, g: .2 })),
+    cheer:    () => { [523.25, 698.46, 880].forEach((f, i) => tone({ f, at: i * .055, d: .3, g: .24 })); noise({ f: 2400, to: 4800, d: .34, g: .05, q: 3 }); },
+    flap:     () => { noise({ f: 620, to: 260, d: .16, g: .1, q: .8 }); noise({ f: 540, to: 240, at: .17, d: .16, g: .08, q: .8 }); },
+
     /* world */
     rise:     () => { tone({ f: 110, to: 220, d: 1.3, g: .1, a: .4 }); noise({ f: 200, to: 700, d: 1.2, g: .05, q: .5 }); },
     sweep:    () => noise({ f: 260, to: 1100, d: .8, g: .12, q: .5, filter: 'lowpass' })
@@ -117,11 +153,27 @@
     boot();
     if (!ctx || !VOICE[name]) return;
     if (ctx.state === 'suspended') ctx.resume();
-    const g = GAIN[group] || .6;
-    const prev = bus.gain.value;
-    bus.gain.value = .085 * g / .6;
+    /* an expression is the quietest thing in the mix and must never fight
+       a real event, so a louder voice landing in the queue window wins */
+    if (group !== 'expression' && queued) { clearTimeout(queued); queued = null; }
+    dest = nodes[group] || bus;
     try { VOICE[name](); } catch (e) { /* never let audio break a lesson */ }
-    bus.gain.value = prev;
+    dest = bus;
+  }
+
+  /* Expressions are QUEUED, not played. Stages set a state and then sound
+     the beat themselves (`set('celebrate')` then `sfx('win')`), so playing
+     immediately would double every reward. A short hold lets the louder
+     voice arrive and cancel this one; alone, it plays imperceptibly late. */
+  let queued = null, lastVoice = '', lastAt = 0;
+  function express(name) {
+    if (!enabled || !VOICE[name]) return;
+    const now = performance.now();
+    /* the same feeling twice in a breath is a stutter, not emphasis */
+    if (name === lastVoice && now - lastAt < 420) return;
+    lastVoice = name; lastAt = now;
+    clearTimeout(queued);
+    queued = setTimeout(() => { queued = null; fire(name, 'expression'); }, 90);
   }
 
   /* ---------- the manager surface used by components ---------- */
@@ -134,8 +186,14 @@
     playHint:       (n) => fire(n || 'hint', 'ui'),
     playDiscovery:  (n) => fire(n || 'discover', 'discovery'),
     playTransition: (n) => fire(n || 'sweep', 'transition'),
+    playExpression: (n) => express(n),
     playComplete:   () => fire('complete', 'discovery'),
-    toggle() { enabled = !enabled; if (enabled) fire('tap', 'ui'); return enabled; },
+    toggle() {
+      enabled = !enabled;
+      if (!enabled) { clearTimeout(queued); queued = null; }
+      else fire('tap', 'ui');
+      return enabled;
+    },
     get enabled() { return enabled; }
   };
 
