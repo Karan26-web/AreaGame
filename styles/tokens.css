@@ -1,0 +1,66 @@
+/* ============================================================
+   Design tokens — "Nibi Maths" lesson system
+   One warm, sophisticated palette shared by every lesson stage.
+   ============================================================ */
+:root {
+  /* Stage / surfaces */
+  --bg:          #ffffff;
+  --bg-deep:     #f7f4ee;
+  --card:        #ffffff;
+  --card-2:      #f5f7f3;
+  --line:        #e3e7de;
+  --line-soft:   #eff2ec;
+
+  /* Ink */
+  --ink:         #17221a;
+  --ink-2:       #4c5a4f;
+  --ink-3:       #8b978d;
+
+  /* Brand (tuned to Nibi's cornflower body) */
+  --brand:       #4a7ce6;
+  --brand-deep:  #2f5cba;
+  --brand-soft:  #e9f0fe;
+
+  /* Diagram language — each role has ONE consistent colour */
+  --para:        #2f5d34;   /* parallel sides (a, b)        */
+  --para-soft:   #e7f1e6;
+  --hgt:         #6849c9;   /* perpendicular height (h)     */
+  --hgt-soft:    #ece7fb;
+  --slant:       #9aa79c;   /* non-parallel / slanted sides */
+  --shape-line:  #2f5d34;
+  --shape-fill:  #faefa6;
+  --shape-fill2: #cfe2f7;   /* the mirrored copy            */
+  --shape-fill3: #f0f1ec;   /* inert / secondary shapes     */
+
+  /* The world (Mars plate) */
+  --world-ink:   #241812;   /* headings set on the peach sky      */
+  --world-ink-2: #4a3125;   /* supporting copy on the sky         */
+  --world-warm:  #d88356;
+
+  /* Feedback */
+  --ok:          #2f7d3e;
+  --ok-soft:     #e7f3e7;
+  --warn:        #b9781a;
+  --warn-soft:   #fbf1dc;
+
+  /* Type */
+  --font: ui-rounded, "SF Pro Rounded", "Hiragino Maru Gothic ProN",
+          Quicksand, Nunito, "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  --fw-reg: 500; --fw-med: 600; --fw-bold: 700; --fw-black: 800;
+
+  /* Elevation — restrained, warm-tinted */
+  --sh-1: 0 1px 2px rgba(30,45,32,.05), 0 2px 8px rgba(30,45,32,.05);
+  --sh-2: 0 2px 4px rgba(30,45,32,.06), 0 8px 22px rgba(30,45,32,.07);
+  --sh-3: 0 6px 14px rgba(30,45,32,.09), 0 22px 50px rgba(30,45,32,.10);
+
+  /* Radii */
+  --r-s: 10px; --r-m: 16px; --r-l: 22px; --r-xl: 30px;
+
+  /* Motion */
+  --t-fast: 180ms;
+  --t-ui:   280ms;
+  --t-slow: 460ms;
+  --ease:      cubic-bezier(.32,.72,.28,1);
+  --ease-out:  cubic-bezier(.16,.84,.3,1);
+  --ease-back: cubic-bezier(.34,1.56,.44,1);
+}

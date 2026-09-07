@@ -1,0 +1,156 @@
+/* ============================================================
+   The world — a layered Mars environment built from one flat
+   vector plate (assets/bgm.png). The plate is drawn three times
+   and clipped into horizontal bands, so sky, mid-ground and
+   terrain can settle in one after another and drift at different
+   rates. Once seated the bands are pixel-identical to the plate.
+   ============================================================ */
+
+#world {
+  position: fixed; inset: 0; overflow: hidden; z-index: 0;
+  background: linear-gradient(#f6c79b 0%, #f8d9ae 46%, #e08a5f 74%, #c96844 100%);
+}
+
+.w-layer {
+  position: absolute; inset: -2% -3%;
+  background-image: url("../assets/bgm.png");
+  background-size: cover;
+  background-position: 50% 62%;
+  will-change: transform, opacity;
+  opacity: 0;
+}
+/* bands, top to bottom: sky · distant relief · terrain + foreground */
+#w-sky    { clip-path: inset(0 0 48% 0); }
+#w-mid    { clip-path: inset(52% 0 26% 0); }
+#w-ground { clip-path: inset(74% 0 0 0); }
+
+/* the plate is warm and busy at the edges; calm the middle so the
+   learning panel always sits on quiet ground */
+#w-haze {
+  background:
+    radial-gradient(58% 46% at 50% 46%, rgba(255,244,228,.34), rgba(255,244,228,0) 70%),
+    linear-gradient(180deg, rgba(255,238,214,.16) 0%, rgba(255,238,214,0) 26%);
+  opacity: 0;
+  transition: opacity 1200ms var(--ease);
+}
+.w-fx { position: absolute; inset: 0; pointer-events: none; }
+
+/* --- stars --- */
+.star {
+  position: absolute; border-radius: 50%;
+  background: #fff8ee;
+  opacity: 0;
+  animation: twinkle var(--dur, 5s) ease-in-out var(--delay, 0s) infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: .12; transform: scale(.7); }
+  50%      { opacity: .85; transform: scale(1); }
+}
+
+/* --- drifting dust --- */
+.mote {
+  position: absolute; border-radius: 50%;
+  background: rgba(255, 233, 205, .75);
+  opacity: 0;
+  animation: drift var(--dur, 26s) linear var(--delay, 0s) infinite;
+}
+@keyframes drift {
+  0%   { opacity: 0;   transform: translate3d(0, 0, 0); }
+  12%  { opacity: .55; }
+  80%  { opacity: .35; }
+  100% { opacity: 0;   transform: translate3d(var(--dx, 120px), var(--dy, -70px), 0); }
+}
+
+/* --- transition dust sweep across the terrain --- */
+#w-sweep::after {
+  content: ""; position: absolute; left: -35%; bottom: 0; width: 32%; height: 46%;
+  background: radial-gradient(60% 100% at 50% 100%, rgba(216,131,86,.55), rgba(216,131,86,0) 72%);
+  opacity: 0;
+}
+#w-sweep.go::after { animation: sweep 900ms var(--ease-out); }
+@keyframes sweep {
+  0%   { opacity: 0;   transform: translateX(0) scaleY(.7); }
+  25%  { opacity: 1; }
+  100% { opacity: 0;   transform: translateX(430%) scaleY(1.1); }
+}
+
+/* ============================================================
+   Composition: a 1400 x 940 canvas floating in the world
+   ============================================================ */
+#app { position: fixed; inset: 0; overflow: hidden; z-index: 1; }
+
+#stage {
+  position: absolute; left: 50%; top: 50%;
+  width: 1520px; height: 1010px;
+  transform-origin: 50% 50%;
+  user-select: none;
+}
+
+/* --- lesson heading, set on the world above the panel --- */
+#lesson-head {
+  position: absolute; left: 120px; top: 92px; width: 1280px;
+  text-align: center; pointer-events: none;
+}
+#lesson-title {
+  margin: 0; font-size: 44px; line-height: 1.1; font-weight: var(--fw-black);
+  letter-spacing: -.02em; color: var(--world-ink);
+  text-shadow: 0 1px 0 rgba(255,245,230,.6);
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 460ms var(--ease-out), transform 520ms var(--ease-out);
+}
+#lesson-sub {
+  margin: 12px 0 0; font-size: 24px; line-height: 1.3; font-weight: var(--fw-bold);
+  color: var(--world-ink-2);
+  text-shadow: 0 1px 0 rgba(255,245,230,.5);
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 460ms var(--ease-out) 90ms, transform 520ms var(--ease-out) 90ms;
+}
+#lesson-head.on #lesson-title,
+#lesson-head.on #lesson-sub { opacity: 1; transform: none; }
+#lesson-sub em { font-style: normal; color: var(--para); }
+#lesson-sub em.h { color: var(--hgt); }
+#lesson-sub em.h { color: var(--hgt); }
+
+/* --- the learning panel --- */
+#card {
+  position: absolute; left: 120px; top: 212px;
+  width: 1280px; height: 720px;
+  border-radius: 30px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow:
+    0 10px 24px rgba(104, 52, 24, .13),
+    0 40px 80px rgba(104, 52, 24, .15);
+  opacity: 0;
+  transform: translateY(18px) scale(.972);
+  transition:
+    opacity 620ms var(--ease-out),
+    transform 680ms cubic-bezier(.22,.9,.24,1.02),
+    box-shadow 800ms var(--ease-out);
+}
+#card.on { opacity: 1; transform: none; }
+#card.settling { transition-duration: 320ms; }
+
+/* The work surface. Nibi stands on it, the geometry floats above it, and
+   the buttons live on the apron below. It is what turns a white rectangle
+   into a room. */
+.stage-floor {
+  position: absolute; left: 0; right: 0; top: 600px; bottom: 0; z-index: 0;
+  background: linear-gradient(180deg, rgba(47,93,52,.085), rgba(47,93,52,.02) 70%);
+  opacity: 0; transition: opacity 700ms var(--ease-out) 120ms;
+}
+#card.on .stage-floor { opacity: 1; }
+.stage-floor::before {
+  content: ""; position: absolute; left: 36px; right: 36px; top: 0; height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg,
+    rgba(47,93,52,0), rgba(47,93,52,.24) 12%, rgba(47,93,52,.24) 88%, rgba(47,93,52,0));
+}
+
+/* --- Nibi shares the panel's coordinates, without its clipping --- */
+#nibi-space {
+  position: absolute; left: 120px; top: 212px;
+  width: 1280px; height: 720px;
+  overflow: visible; pointer-events: none; z-index: 6;
+}
+#nibi-layer { position: absolute; inset: 0; }
