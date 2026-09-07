@@ -35,7 +35,6 @@
   --brand-lift:  #107f78;   /* lit top of a button, white 4.9:1 */
   --brand:       #0b6f69;   /* white 6.0:1                      */
   --brand-deep:  #064b48;
-  --brand-soft:  #e2f4f1;
   --brand-rgb:   6, 75, 72;
 
   /* Diagram language — each role has ONE consistent colour */
@@ -44,6 +43,11 @@
   --hgt:         #5a3cb8;   /* perpendicular height (h)     */
   --hgt-soft:    #ece7fb;
   --slant:       #7d8a80;   /* non-parallel / slanted sides */
+  /* the learner's own pending selection on the diagram — a highlighter
+     swipe, not part of the mathematical language. It reads against the
+     deep-green outline it runs beside (4.6:1), which is the colour it has
+     to be told apart from. */
+  --pick:        #ffc21f;
   --shape-line:  #2f5d34;
   --shape-fill:  #faefa6;
   --shape-fill2: #cfe2f7;   /* the mirrored copy            */

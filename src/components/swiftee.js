@@ -132,7 +132,7 @@
       this.body.style.transformOrigin = this.cell.style.transformOrigin = '50% ' + foot;
 
       this.x = 640; this.y = 620; this.flip = false;
-      this.state = null; this._raf = null; this._bubble = null;
+      this.state = null; this._raf = null; this._said = null;
       this._clip = null;
       this.resize(132);
       this.set('idle');
@@ -263,14 +263,6 @@
       return this;
     }
 
-    /* rendered width of the current clip's silhouette — a raised wing is
-       far wider than an idle stance, so speech has to clear the real ink
-       rather than a fraction of the height */
-    spriteWidth() {
-      const c = D.clips[this._clip] || D.clips.blinking;
-      return (c.ink[2] - c.ink[0]) * this._cellPx;
-    }
-
     bob(on) { this.body.classList.toggle('swiftee-anim-bob', !!on); return this; }
 
     /* one-shot body flourishes */
@@ -284,62 +276,44 @@
     squash() { return this.fx('squash'); }
     shake()  { return this.fx('shake'); }
 
-    /* ---------- speech ---------- */
+    /* ---------- speech ----------
+       The words go to the panel's caption, not to a bubble over Swiftee's
+       head: narration that floats with the character ends up on top of the
+       diagram it is describing. `side`, `dx` and `w` are accepted and
+       ignored — the stages still pass them, and the caption has one place.
+       The awaited timing is unchanged, so no choreography moved.        */
     say(text, o) {
       o = o || {};
-      this.hush();
-      const side = o.side || (this.x > 800 ? 'left' : this.x < 470 ? 'right' : 'up');
-      const b = h('div.bubble', { html: text });
-      if (o.w) b.style.maxWidth = o.w + 'px';
-      const S = this.size;
-      /* clear the silhouette, then a breathing gap on top of that */
-      const gap = Math.round(this.spriteWidth() / 2) + 26;
-      if (side === 'up')    { b.style.left = (o.dx === undefined ? -34 : o.dx) + 'px'; b.style.bottom = (S + 22) + 'px'; b.classList.add('tail-bl'); }
-      if (side === 'right') { b.style.left  = gap + 'px'; b.style.bottom = Math.round(S * .52) + 'px'; b.classList.add('tail-l'); }
-      if (side === 'left')  { b.style.right = gap + 'px'; b.style.bottom = Math.round(S * .52) + 'px'; b.classList.add('tail-r'); }
-      this.anchor.appendChild(b);
-      this._bubble = b;
-      /* keep the bubble inside the stage — narrow it first so it wraps
-         rather than sliding back across Swiftee's face                 */
-      requestAnimationFrame(() => {
-        const r = b.getBoundingClientRect(), st = document.getElementById('card').getBoundingClientRect();
-        const k = (NL.Stage && NL.Stage.scale) || 1;
-        const M = 18;                                    /* stage margin */
-        const avail = side === 'left'
-          ? (r.right - st.left) / k - M
-          : (st.right - r.left) / k - M;
-        if (r.width / k > avail) b.style.maxWidth = Math.max(170, Math.floor(avail)) + 'px';
-
-        requestAnimationFrame(() => {
-          const r2 = b.getBoundingClientRect();
-          let over = 0;
-          if (r2.right > st.right - M * k) over = (r2.right - (st.right - M * k)) / k;
-          if (r2.left < st.left + M * k)   over = -((st.left + M * k) - r2.left) / k;
-          if (over) {
-            if (b.style.left) b.style.left = (parseFloat(b.style.left) - over) + 'px';
-            else b.style.right = (parseFloat(b.style.right) + over) + 'px';
-          }
-          const top = (r2.top - st.top) / k;
-          if (top < 70 && b.style.bottom) b.style.bottom = (parseFloat(b.style.bottom) - (70 - top)) + 'px';
-          b.classList.add('show');
-        });
-      });
-      NL.Sfx.play('pop');
-      /* speech clears itself once it has been read, so it never lingers
-         over the diagram; o.life = 0 keeps it until the next line       */
-      const life = o.life === undefined
-        ? Math.min(9000, 2400 + b.textContent.length * 62)
-        : o.life;
-      if (life) setTimeout(() => { if (this._bubble === b) this.hush(); }, life);
+      const el = this.caption();
+      if (el) {
+        el.innerHTML = text;
+        el.classList.add('show');
+        this._said = text;
+        /* no tick of its own: the state Swiftee is in already sounded when
+           it changed, and that expression IS the cue for the line */
+        /* a line clears itself once it has been read, so a stale remark is
+           never left standing over an interaction; o.life = 0 holds it
+           until the next line or an explicit hush()                     */
+        const life = o.life === undefined
+          ? Math.min(9000, 2400 + el.textContent.length * 62)
+          : o.life;
+        clearTimeout(this._lifeT);
+        if (life) this._lifeT = setTimeout(() => { if (this._said === text) this.hush(); }, life);
+      }
       return wait(o.hold === undefined ? 260 : o.hold);
     }
 
+    caption() {
+      if (this._cap === undefined) this._cap = document.getElementById('caption');
+      return this._cap;
+    }
+
     hush() {
-      const b = this._bubble;
-      this._bubble = null;
-      if (!b) return;
-      b.classList.remove('show');
-      setTimeout(() => b.remove(), 300);
+      clearTimeout(this._lifeT);
+      this._said = null;
+      const el = this.caption();
+      if (el) el.classList.remove('show');
+      return this;
     }
 
     hide()  { this.anchor.classList.add('hidden'); this.hush(); return this; }

@@ -12,8 +12,8 @@ this script:
      smaller than lossy WebP, which wastes bits on the hard edges),
   2. packs one representative still per clip into a single `poster.webp` used
      as the instant, always-resident fallback while a clip streams in,
-  3. measures each clip's ink box, so the runtime can scale by the character's
-     real height and clear speech bubbles past its real silhouette,
+  3. measures the standing idle's ink box, so the runtime can scale the
+     character by its real height and stand it on its real feet,
   4. writes `src/components/swiftee.data.js` — the manifest as plain JS, so the
      component needs no fetch and no async boot.
 
@@ -68,7 +68,11 @@ ALL_CLIPS = LOOPS + INTROS
 
 
 def ink_box(sheet_path, meta):
-    """Union of every frame's opaque bounds, as fractions of the cell."""
+    """Union of every frame's opaque bounds, as fractions of the cell.
+
+    Only the standing idle is measured: every clip shares the same
+    registration, so its height and foot line set the scale for all of them.
+    """
     img = Image.open(sheet_path).convert('RGBA')
     cell, cols = meta['cell'], meta['cols']
     box = None
@@ -147,10 +151,7 @@ def main():
         webp = cwebp(src, dst, ['-lossless', '-z', '6', '-alpha_filter', 'best'])
         total_png += png
         total_webp += webp
-        clips[name] = {
-            'cols': m['cols'], 'rows': m['rows'], 'frames': m['frames'],
-            'ink': ink_box(src, m),
-        }
+        clips[name] = {'cols': m['cols'], 'rows': m['rows'], 'frames': m['frames']}
         print(f'  {name:18s} {m["frames"]:3d}f  {png/1024:7.1f} KB png -> {webp/1024:6.1f} KB webp')
 
     poster, poster_bytes = build_poster(pack, out_dir, sheets['blinking']['cell'])
@@ -158,7 +159,8 @@ def main():
 
     # The standing idle defines the character's scale and its foot line: every
     # clip shares the same registration, so one measurement drives them all.
-    stand = clips['blinking']['ink']
+    stand = ink_box(os.path.join(pack, f'spritesheets/{a.scale}/swiftee_blinking@{a.scale}.png'),
+                    sheets['blinking'])
     data = {
         'dir': a.out.replace(os.sep, '/') + '/',
         'cell': sheets['blinking']['cell'],

@@ -269,30 +269,28 @@ body {
 .step.final { background: var(--ok-soft); color: var(--ok); }
 .step .em { color: var(--para); font-style: italic; }
 
-/* ---------- Speech bubble ---------- */
-.bubble {
-  position: absolute; width: max-content; max-width: 330px;
-  background: var(--card); color: var(--ink);
-  font-size: 19px; font-weight: var(--fw-med); line-height: 1.34;
-  padding: 14px 18px; border-radius: 18px;
-  border: 1.5px solid var(--line); box-shadow: var(--sh-2);
-  opacity: 0; transform: translateY(8px) scale(.96);
-  transition: opacity var(--t-ui) var(--ease-out), transform var(--t-ui) var(--ease-back);
-  pointer-events: none; z-index: 3;
+/* ---------- Swiftee's caption ----------
+   Swiftee used to speak in a floating bubble anchored to its own body,
+   which meant the narration drifted across the diagram it was describing
+   — and on the tapping stages it covered the very edge being discussed.
+   It now reads on the panel's apron: one line, one place, always the same
+   place, between the Back and Next buttons. The character carries the
+   feeling in its face and its voice; the panel carries the words.      */
+#caption {
+  /* the gutters clear Back on the left and the primary CTA on the right —
+     a CTA runs to about 200px wide, so 156px was not enough */
+  position: absolute; left: 236px; right: 236px; bottom: 28px; z-index: 5;
+  margin: 0; text-align: center;
+  font-size: 21px; line-height: 1.35; font-weight: var(--fw-med);
+  color: var(--ink-2);
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 260ms var(--ease-out), transform 300ms var(--ease-out);
+  pointer-events: none;
 }
-.bubble.show { opacity: 1; transform: none; }
-.bubble b { font-weight: var(--fw-black); }
-.bubble .para { color: var(--para); font-weight: var(--fw-bold); }
-.bubble .hgt  { color: var(--hgt);  font-weight: var(--fw-bold); }
-.bubble::after {
-  content: ""; position: absolute; width: 14px; height: 14px;
-  background: var(--card); border: 1.5px solid var(--line);
-  transform: rotate(45deg);
-}
-.bubble.tail-bl::after { left: 22px; bottom: -8px; border-top: none; border-left: none; }
-.bubble.tail-br::after { right: 22px; bottom: -8px; border-top: none; border-left: none; }
-.bubble.tail-l::after  { left: -8px; top: 50%; margin-top: -7px; border-top: none; border-right: none; }
-.bubble.tail-r::after  { right: -8px; top: 50%; margin-top: -7px; border-bottom: none; border-left: none; }
+#caption.show { opacity: 1; transform: none; }
+#caption b { font-weight: var(--fw-black); color: var(--ink); }
+#caption .para { color: var(--para); font-weight: var(--fw-bold); }
+#caption .hgt  { color: var(--hgt);  font-weight: var(--fw-bold); }
 
 /* ---------- Swiftee ----------
    #swiftee is a zero-size anchor at Swiftee's FEET. The cell below it is
@@ -365,21 +363,36 @@ body {
 .shape.copy { fill: var(--shape-fill2); }
 .shape.inert{ fill: var(--shape-fill3); stroke: #9aa79c; stroke-width: 2.4; }
 .edge-hit { fill: none; stroke: transparent; stroke-width: 26px; cursor: pointer; }
-.edge     { fill: none; stroke-width: 5.5; stroke-linecap: round; }
+.edge     { fill: none; stroke-width: 5.5; stroke-linecap: round; pointer-events: none; }
 .edge.para{ stroke: var(--para); }
 .edge.hgt { stroke: var(--hgt); stroke-dasharray: 10 8; stroke-width: 4; }
 .edge.slant { stroke: var(--warn); }
 .edge.soft{ stroke: var(--slant); }
-/* the accent teal is the interaction colour on the diagram */
+/* the accent teal is the interaction colour on the diagram.
+   A tap handle has to look tappable at rest, not only while it animates:
+   these sit at .5 on their own, brighten under the pointer, and keep
+   pulsing until the learner touches one of them. */
 .edge.tapzone {
-  stroke: var(--accent); stroke-width: 8; stroke-linecap: round;
-  transition: opacity 200ms var(--ease), stroke-width 200ms var(--ease);
+  stroke: var(--accent); stroke-width: 9; stroke-linecap: round;
+  opacity: .5;
+  transition: opacity 180ms var(--ease), stroke-width 180ms var(--ease);
 }
+.edge.tapzone.hot { opacity: .9; stroke-width: 13; }
 @keyframes tapPulse {
-  0%, 100% { stroke-width: 8; opacity: .32; }
-  50%      { stroke-width: 14; opacity: .58; }
+  0%, 100% { stroke-width: 9;  opacity: .5;  }
+  50%      { stroke-width: 15; opacity: .78; }
 }
-.edge.tapzone.hint { animation: tapPulse 1.5s var(--ease) 2; }
+.edge.tapzone.hint { animation: tapPulse 1.6s var(--ease) infinite; }
+/* A side the learner has chosen: a wide highlighter swipe, drawn under the
+   shape so the deep-green outline stays crisp on top of it and the yellow
+   reads as a band running alongside the edge. Green is reserved for what
+   the diagram has *established* is parallel — the chevrons — so a pending
+   choice must not borrow it, or picking a side would look like being told
+   you were right. */
+.edge.pick {
+  stroke: var(--pick); stroke-width: 20; opacity: 1;
+  stroke-linecap: round;
+}
 .glow     { filter: url(#softGlow); }
 .fade-in  { opacity: 0; transition: opacity var(--t-slow) var(--ease); }
 .fade-in.on { opacity: 1; }

@@ -153,13 +153,19 @@
     boot();
     if (!ctx || !VOICE[name]) return;
     if (ctx.state === 'suspended') ctx.resume();
-    /* an expression is the quietest thing in the mix and must never fight
-       a real event, so a louder voice landing in the queue window wins */
-    if (group !== 'expression' && queued) { clearTimeout(queued); queued = null; }
+    /* An expression must never fight a real event, so a LOUD voice landing
+       in the queue window wins. Only the loud groups count: a caption tick
+       or a tap blip is quieter than the character's own voice, and letting
+       those cancel it would silence the expression on almost every line,
+       since a state change and a line of speech arrive together. */
+    if (queued && LOUD[group]) { clearTimeout(queued); queued = null; }
     dest = nodes[group] || bus;
     try { VOICE[name](); } catch (e) { /* never let audio break a lesson */ }
     dest = bus;
   }
+
+  /* the groups that outrank the character's own voice */
+  const LOUD = { success: 1, error: 1, discovery: 1 };
 
   /* Expressions are QUEUED, not played. Stages set a state and then sound
      the beat themselves (`set('celebrate')` then `sfx('win')`), so playing

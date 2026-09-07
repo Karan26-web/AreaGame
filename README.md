@@ -21,6 +21,7 @@ world (full viewport)          assets/mars-plate.webp, drawn as three clipped ba
 └── canvas 1408 x 952          uniformly scaled + centred
     ├── heading                stage title + subtitle, set on the sky
     ├── #card 1280 x 720       the learning panel — every stage's coordinate space
+    │   ├── #caption           what Swiftee says, on the apron — never over the board
     │   └── #progress          a 4px hairline along its foot — no numbers, no labels
     └── #swiftee-space         the panel's coordinates, without its clipping
 ```
@@ -106,7 +107,10 @@ Two rules keep it from becoming noise:
 * **an expression is queued, not played.** Stages set a state and then sound
   the beat themselves — `set('celebrate')` then `sfx('win')` — so playing
   immediately would double every reward. A 90 ms hold lets the louder voice
-  arrive and cancel the expression; alone, it plays imperceptibly late.
+  arrive and cancel the expression; alone, it plays imperceptibly late. Only
+  the loud groups outrank it (`success`, `error`, `discovery`): a state change
+  and a line of speech arrive together, so letting a caption tick cancel the
+  expression would have silenced it on almost every line.
 * **the same feeling twice in a breath is suppressed.** `confused` and
   `incorrect` share a voice, and hearing it twice reads as a stutter, not as
   emphasis.
@@ -154,6 +158,7 @@ One palette, four roles, applied everywhere:
 | shape body | pale yellow `#faefa6` with a deep-green `#2f5d34` outline | every polygon |
 | parallel sides (a, b) | deep green `#2f5d34`, italic labels, mid-edge arrows | edges, labels, `<em>` in a subtitle |
 | perpendicular height (h) | violet `#5a3cb8`, dashed, right-angle marker | never confusable with a parallel side |
+| the learner's own choice | yellow `#ffc21f`, a wide swipe under the outline | a side they have tapped, before it is judged |
 | interaction | teal, Swiftee's own plumage — `--accent #159289` for marks, `--brand #0b6f69` for buttons | tap hints and selection · CTAs |
 
 Interaction is one hue split by the job it does, because the two jobs have
@@ -166,6 +171,13 @@ The three inks are all legible on the card: `--ink` 16.4:1, `--ink-2` 7.3:1,
 `--ink-3` 5.4:1. `--ink-3` is the one that matters — it carries the 14-18px
 captions, shape names, formula operators and step numbers, and at its old
 value it was 3.0:1, which made the names under the diagrams guesswork.
+
+Green is reserved for what the diagram has *established* — the chevrons on a
+confirmed parallel pair. A side the learner has merely *chosen* is yellow, and
+the distinction matters: the first version of the tapping stage turned a chosen
+side green, so picking one looked like being told you were right. The swipe is
+drawn under the shape, so the deep-green outline stays crisp on top of it and
+the yellow reads as a band running alongside the edge, like a highlighter.
 
 Feedback borrows the same green for *correct* and a warm amber for *look
 again* — never red. A stage's subtitle uses `<em>` / `<em class="h">` so the
@@ -265,7 +277,7 @@ character's **animation clips**, and exposes:
 ```js
 swiftee.set('point-right');            // semantic state, optional flip
 swiftee.to(x, y, {then: 'listening'}); // travel to a spot, feet-anchored
-swiftee.say('That’s the height!');     // auto-sided bubble, kept inside the stage
+swiftee.say('That’s the height!');     // one line on the panel's caption
 swiftee.react('ok' | 'wrong', line);   // reaction + sound + squash/shake
 swiftee.squash(); swiftee.hop();
 ```
@@ -277,6 +289,18 @@ answer or a measurement.
 Stages never name a clip. They ask for `celebrate`, `measuring`, `incorrect`,
 and the component decides what that looks like — which is what let the whole
 character be swapped without touching a single stage.
+
+`say()` writes to `#caption`, one line on the panel's apron between the Back
+and Next buttons. It used to be a bubble anchored to Swiftee's own body, which
+meant the narration drifted across the diagram it was describing — and on the
+tapping stages it covered the very edge under discussion. The character now
+carries the feeling, in its face and its voice; the panel carries the words,
+always in the same place. `side`, `dx` and `w` are still accepted and ignored,
+so no stage had to change, and the awaited timing is untouched.
+
+Every primary action in the lesson is therefore at `{r: 34, b: 30}` — the two
+stages that centred theirs would have sat on the caption, and one consistent
+CTA position is worth more than either composition.
 
 ### Expressions
 

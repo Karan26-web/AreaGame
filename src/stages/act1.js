@@ -234,6 +234,10 @@
       await swiftee.to(T.bottom[1].x - 60, 600, { sig: ctx.sig, dur: 1200, arc: 0, then: 'curious', walk: false });
       await ctx.wait(320);
       hintBot.style.opacity = 0;
+      /* and they go: left in the group they would be caught by the dimming
+         pass below and become a standing 34% highlight on the correct pair,
+         which hands the learner the answer */
+      hintTop.remove(); hintBot.remove();
 
       /* ---- hand over ---- */
       swiftee.hush();
@@ -245,8 +249,15 @@
       });
       UI.vanish(knownNote, 240);
       await ctx.turn();
-      const ask = ctx.show(UI.instruction('Tap the two sides you think are <b>parallel</b>.', { l: 96, t: 96, w: 380 }));
-      ask.style.fontSize = '29px';
+      /* The task sits directly above the shape it is about, not away in the
+         corner: the learner's eye is already on the trapezium, and an
+         instruction it has to go looking for is an instruction it misses. */
+      const ask = ctx.show(UI.instruction(
+        'Tap the <b>two sides</b> you think are parallel.',
+        { cx: T.center.x, t: 92, w: 430 }));
+      /* and a plain count, so "how many?" and "am I done?" are both answered
+         without reading the sentence again */
+      const tally = ctx.show(UI.tag('0 of 2 chosen', { cx: T.center.x, t: 470 }), { delay: 260 });
 
       const edges = {
         top:  { pts: T.top,    adj: ['legL', 'legR'] },
@@ -265,7 +276,7 @@
         overlay[k] = line;
       });
 
-      let picked = [], busy = false, hovered = null;
+      let picked = [], busy = false, hovered = null, touched = false;
       const done = ctx.once();
 
       /* every side gets a visible, hoverable handle — the learner should
@@ -277,8 +288,8 @@
         hit.addEventListener('pointerleave', () => { if (hovered === k) hovered = null; paint(); });
         g.appendChild(hit);
         setTimeout(() => {
-          overlay[k].style.opacity = .32;
-          overlay[k].classList.add('hint');
+          overlay[k].style.removeProperty('opacity');   /* CSS owns it from here */
+          paint();
           NL.Sound.playUI('tap');
         }, 180 + i * 140);
       });
@@ -287,18 +298,20 @@
         Object.keys(overlay).forEach(k => {
           const on = picked.indexOf(k) >= 0;
           const el = overlay[k];
-          el.classList.remove('hint');
-          el.setAttribute('class', 'edge ' + (on ? 'para' : 'tapzone'));
-          el.style.opacity = on ? 1 : (hovered === k ? .6 : .32);
-          if (on) el.setAttribute('stroke-width', 6.5);
-          else el.removeAttribute('stroke-width');
+          /* the four handles keep pulsing until the learner touches one:
+             an affordance that fades out after two beats is an affordance
+             that is gone by the time it is needed */
+          el.setAttribute('class', 'edge ' + (on ? 'pick' : 'tapzone')
+                                 + (!on && !touched ? ' hint' : '')
+                                 + (hovered === k && !on ? ' hot' : ''));
         });
+        if (tally) tally.innerHTML = picked.length + ' of 2 chosen';
       }
 
       async function choose(k) {
         if (busy) return;
-        if (picked.indexOf(k) >= 0) { picked = picked.filter(x => x !== k); paint(); return; }
-        picked.push(k); ctx.sfx('tick'); paint();
+        if (picked.indexOf(k) >= 0) { picked = picked.filter(x => x !== k); touched = true; paint(); return; }
+        picked.push(k); touched = true; ctx.sfx('tick'); paint();
         if (picked.length < 2) return;
         busy = true;
         const [a, b] = picked;
@@ -361,6 +374,7 @@
 
       /* build the definition, one idea at a time */
       ask.remove();
+      if (tally) UI.vanish(tally, 200);
       ctx.head('What is a Trapezium?', 'A trapezium is a 4-sided shape with <em>one pair of parallel sides</em>.');
       NL.Sound.playDiscovery();
       ctx.show(UI.instruction('Just <b>one</b> pair.', { l: 60, t: 92, w: 430 }));
@@ -579,7 +593,7 @@
           check.remove();
           done.resolve();
         }
-      }, { box: { cx: 640, b: 34 } });
+      }, { box: { r: 34, b: 30 } });          /* where every other CTA lives */
       ctx.show(check, { delay: 300 });
 
       function showMarks(item, pairs) {

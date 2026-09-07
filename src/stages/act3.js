@@ -438,7 +438,7 @@
       NL.Sound.playComplete();
       await swiftee.say('You didn’t memorise that formula —<br>you <b>built</b> it. 💚', { side: 'left', w: 250 });
 
-      ctx.show(UI.btn('Start again', () => NL.Lesson.restart(), { box: { cx: 640, b: 34 } }), { delay: 400 });
+      ctx.show(UI.btn('Start again', () => NL.Lesson.restart(), { box: { r: 34, b: 30 } }), { delay: 400 });
       await new Promise(() => {});   /* the lesson ends here */
     }
   });
