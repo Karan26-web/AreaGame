@@ -27,12 +27,12 @@
     id: 'warmup', label: 'Warm-up',
     title: null,
     async enter(ctx) {
-      const { nibi } = ctx;
+      const { swiftee } = ctx;
 
-      /* Nibi steps up from the Mars ground onto the panel */
-      nibi.resize(159);
-      if (nibi.y > 700) await nibi.to(206, 600, { sig: ctx.sig, dur: 560, arc: 40, then: 'excited' });
-      else nibi.place(206, 600, true).set('excited');
+      /* Swiftee steps up from the Mars ground onto the panel */
+      swiftee.resize(159);
+      if (swiftee.y > 700) await swiftee.to(206, 600, { sig: ctx.sig, dur: 560, arc: 40, then: 'excited' });
+      else swiftee.place(206, 600, true).set('excited');
 
       /* three familiar shapes */
       const defs = [
@@ -64,7 +64,7 @@
         async onAccept(chip, slot) {
           const i = defs.findIndex(d => d.id === slot.id);
           cards.mark(slot.id, 'ok');
-          nibi.set('happy'); nibi.squash();
+          swiftee.set('happy'); swiftee.squash();
           NL.Sound.playSuccess('correct');
         },
         async onReject(chip, slot) {
@@ -73,20 +73,20 @@
             square: "Look again — that shape has <b>4 equal</b> sides.",
             tri: "Count the corners on that one — a triangle has only <b>3</b>."
           };
-          nibi.set('curious'); nibi.shake();
-          await nibi.say(hints[slot.id], { side: 'right', w: 260 });
+          swiftee.set('curious'); swiftee.shake();
+          await swiftee.say(hints[slot.id], { side: 'right', w: 260 });
         },
         async onComplete() {
-          nibi.set('celebrate');
-          nibi.squash();
+          swiftee.set('celebrate');
+          swiftee.squash();
           ctx.sfx('win');
           UI.sparks(ctx.fx, 640, 220, 10);
-          await nibi.say("Nice — your shape memory is warm! 🔥", { side: 'right' });
+          await swiftee.say("Nice — your shape memory is warm! 🔥", { side: 'right' });
           ready.resolve();
         }
       });
 
-      await nibi.say("Let’s see what you remember.", { side: 'right', w: 240 });
+      await swiftee.say("Let’s see what you remember.", { side: 'right', w: 240 });
       const ready = ctx.once();
       await ready;
 
@@ -95,9 +95,9 @@
          Same letters, same colours the trapezium will use later, on
          a shape the learner already owns.
          ------------------------------------------------------------ */
-      nibi.hush();
+      swiftee.hush();
       await ctx.wait(420);
-      await nibi.to(160, 600, { sig: ctx.sig, then: 'curious', dur: 420 });
+      await swiftee.to(160, 600, { sig: ctx.sig, then: 'curious', dur: 420 });
       UI.vanish(cards.el, 320);
       Object.values(drag.chips).forEach(c => UI.vanish(c, 320));
       Object.values(drag.slots).forEach(sl => UI.vanish(sl, 320));
@@ -112,7 +112,7 @@
       await G.popIn(rp, R.center, { dur: 560 });
       await ctx.wait(160);
 
-      nibi.set('point-right');
+      swiftee.set('point-right');
       const be = G.edge(R.bottom[0], R.bottom[1], 'para'); g.appendChild(be);
       await ctx.draw(be, 380);
       const bl = G.label(R.x + R.w / 2, R.y + R.h + 32, 'b', 'para'); g.appendChild(bl); UI.appear(bl);
@@ -145,11 +145,11 @@
             ], { l: 700, t: 236 }, { size: 38 });
             ctx.host.querySelectorAll('.instruction').forEach(e => UI.vanish(e, 200));
             ctx.show(f.el, { delay: 220 });
-            await nibi.react('ok', 'Hold on to that one — we build on it today.', { side: 'right', w: 250 });
+            await swiftee.react('ok', 'Hold on to that one — we build on it today.', { side: 'right', w: 250 });
             q.resolve();
           } else {
             api.mark(it.id, 'near');
-            await nibi.react('wrong', it.id === 'sum'
+            await swiftee.react('wrong', it.id === 'sum'
               ? 'Adding the sides gives the distance <b>around</b> it, not the space inside.'
               : 'That would be a <b>triangle</b> — exactly half of this rectangle.',
               { side: 'right', w: 250 });
@@ -171,7 +171,7 @@
     title: 'What is a Trapezium?',
     sub: 'Three shapes you know… and one that’s <em>new</em>.',
     async enter(ctx) {
-      const { nibi, board } = ctx;
+      const { swiftee, board } = ctx;
       const g = board.fresh('meet');
 
       /* ---- the three shapes they already own: small, quiet, to one side ---- */
@@ -192,15 +192,15 @@
       /* the newcomer: the hero of this stage, and much larger than the rest */
       const T = G.trap({ x: 560, y: 190, a: 150, b: 380, h: 230, type: 'iso' });
 
-      /* ---- Nibi walks on and finds the stage empty ---- */
-      nibi.place(-150, 600, true).resize(154).set('walk');
+      /* ---- Swiftee walks on and finds the stage empty ---- */
+      swiftee.place(-150, 600, true).resize(154).set('walk');
       await ctx.wait(620);
       NL.Sound.playCharacter('whoosh');
-      await nibi.to(470, 600, { sig: ctx.sig, dur: 1000, then: 'curious' });
+      await swiftee.to(470, 600, { sig: ctx.sig, dur: 1000, then: 'curious' });
       await ctx.wait(260);
 
       /* ---- the shape DRAWS itself: an object arriving, not a slide ---- */
-      nibi.set('surprised');
+      swiftee.set('surprised');
       const tg = s('g');
       const poly = G.poly(T, { fill: 'none' });
       tg.appendChild(poly);
@@ -209,35 +209,35 @@
       poly.style.transition = 'fill 520ms var(--ease)';
       poly.setAttribute('fill', 'var(--shape-fill)');
       NL.Sound.playShape('shape');
-      await nibi.fx('hop');
-      await nibi.say('Ooh! What <b>is</b> that?', { side: 'right', w: 210 });
+      await swiftee.fx('hop');
+      await swiftee.say('Ooh! What <b>is</b> that?', { side: 'right', w: 210 });
 
-      /* ---- Nibi shows the learner where to look ----
-         the top side lights up while Nibi points at it; then Nibi walks
+      /* ---- Swiftee shows the learner where to look ----
+         the top side lights up while Swiftee points at it; then Swiftee walks
          the whole length of the bottom side while that one lights up,
          so the two sides are introduced as a matched pair            */
-      nibi.hush();
+      swiftee.hush();
       const hintTop = G.edge(T.top[0], T.top[1], 'tapzone');
       const hintBot = G.edge(T.bottom[0], T.bottom[1], 'tapzone');
       hintTop.style.opacity = 0; hintBot.style.opacity = 0;
       g.append(hintTop, hintBot);
 
-      nibi.set('point-right');
+      swiftee.set('point-right');
       hintTop.style.opacity = .6;
       NL.Sound.playShape('paraTick');
       await ctx.wait(1000);
       hintTop.style.opacity = 0;
 
-      nibi.set('walk');
+      swiftee.set('walk');
       hintBot.style.opacity = .6;
       NL.Sound.playShape('paraTick');
-      await nibi.to(T.bottom[1].x - 60, 600, { sig: ctx.sig, dur: 1200, arc: 0, then: 'curious', walk: false });
+      await swiftee.to(T.bottom[1].x - 60, 600, { sig: ctx.sig, dur: 1200, arc: 0, then: 'curious', walk: false });
       await ctx.wait(320);
       hintBot.style.opacity = 0;
 
       /* ---- hand over ---- */
-      nibi.hush();
-      await nibi.to(486, 600, { sig: ctx.sig, then: 'curious', size: 138 });
+      swiftee.hush();
+      await swiftee.to(486, 600, { sig: ctx.sig, then: 'curious', size: 138 });
       [...g.children].forEach(e => {
         if (e === tg) return;
         e.style.transition = 'opacity 500ms var(--ease)';
@@ -306,18 +306,18 @@
 
         if (a === 'top' && b === 'bot' || a === 'bot' && b === 'top') {
           /* correct */
-          nibi.set('correct'); ctx.sfx('ok'); nibi.squash();
+          swiftee.set('correct'); ctx.sfx('ok'); swiftee.squash();
           marks.appendChild(G.parallelMark(T.top[0], T.top[1], 1));
           marks.appendChild(G.parallelMark(T.bottom[0], T.bottom[1], 1));
           UI.sparks(ctx.fx, T.center.x, T.center.y, 8);
-          await nibi.say("Exactly! These two run side by side <b>forever</b>.", { side: 'right', w: 250 });
+          await swiftee.say("Exactly! These two run side by side <b>forever</b>.", { side: 'right', w: 250 });
           done.resolve();
           return;
         }
 
         if (isPair) {
           /* the two slanted legs — extend them and watch them close in */
-          nibi.set('confused');
+          swiftee.set('confused');
           const A = T.legL, B = T.legR;
           const ip = intersect(A[0], A[1], B[0], B[1]);
           const rays = s('g');
@@ -338,7 +338,7 @@
           rays.appendChild(dot);
           await ctx.tween(280, t => dot.setAttribute('r', 7 * t), { ease: 'back' });
           ctx.sfx('boing');
-          await nibi.react('near', "They <b>meet</b> up there! Parallel sides never touch.", { side: 'right', w: 250 });
+          await swiftee.react('near', "They <b>meet</b> up there! Parallel sides never touch.", { side: 'right', w: 250 });
           await ctx.wait(950);
           UI.vanish(rays, 240);
         } else {
@@ -348,16 +348,16 @@
           g.appendChild(dot);
           await ctx.tween(300, t => dot.setAttribute('r', 8 * t), { ease: 'back' });
           ctx.sfx('boing');
-          await nibi.react('near', "Those two already touch — right at that corner!", { side: 'right', w: 250 });
+          await swiftee.react('near', "Those two already touch — right at that corner!", { side: 'right', w: 250 });
           await ctx.wait(950);
           UI.vanish(dot, 240);
         }
         picked = []; paint(); busy = false;
-        nibi.set('listening');
+        swiftee.set('listening');
       }
 
       await done;
-      nibi.hush();
+      swiftee.hush();
 
       /* build the definition, one idea at a time */
       ask.remove();
@@ -389,7 +389,7 @@
     title: 'Are Both of These Trapeziums?',
     sub: 'Count the <em>pairs</em> of parallel sides.',
     async enter(ctx) {
-      const { nibi, board } = ctx;
+      const { swiftee, board } = ctx;
       const g = board.fresh('versus');
 
       const T = G.trap({ x: 168, y: 128, a: 140, b: 268, h: 168, type: 'iso' });
@@ -400,8 +400,8 @@
       G.popIn(tg, T.center, { delay: 120 });
       G.popIn(pg, P.center, { delay: 300 });
 
-      nibi.place(1128, 600, true).resize(141).set('thinking');
-      await nibi.say('Hmm. What do you think?', { side: 'left' });
+      swiftee.place(1128, 600, true).resize(141).set('thinking');
+      await swiftee.say('Hmm. What do you think?', { side: 'left' });
 
       const marksT = s('g'), marksP = s('g'), capT = s('g'), capP = s('g');
       g.append(marksT, marksP, capT, capP);
@@ -417,61 +417,61 @@
         cw: 250,
         onPick: async (it, el, api) => {
           api.busy(true);
-          nibi.hush();
+          swiftee.hush();
           tries++;
           if (it.id === 'one') {
             api.mark('one', 'ok'); api.dim('both'); api.lock();
-            await nibi.react('ok', 'Right! Let me show you why.', { side: 'left' });
+            await swiftee.react('ok', 'Right! Let me show you why.', { side: 'left' });
             await demo();
             done.resolve();
           } else {
             api.mark('both', 'near');
-            await nibi.react('wrong', 'Almost — let’s <b>count the pairs</b> together.', { side: 'left', state: 'confused' });
+            await swiftee.react('wrong', 'Almost — let’s <b>count the pairs</b> together.', { side: 'left', state: 'confused' });
             await demo();
             api.clearMarks(); api.dim('both'); api.busy(false);
-            await nibi.say('Now — how many of them are trapeziums?', { side: 'left' });
+            await swiftee.say('Now — how many of them are trapeziums?', { side: 'left' });
           }
         }
       });
       ctx.show(ch.el, { delay: 220 });
 
       async function demo() {
-        nibi.hush();
+        swiftee.hush();
         /* trapezium: one pair */
-        await nibi.to(T.center.x, 638, { sig: ctx.sig, then: 'point-right', size: 133 });
+        await swiftee.to(T.center.x, 638, { sig: ctx.sig, then: 'point-right', size: 133 });
         const t1 = G.edge(T.top[0], T.top[1], 'para'), t2 = G.edge(T.bottom[0], T.bottom[1], 'para');
         marksT.append(t1, t2);
         await Promise.all([ctx.draw(t1, 460), ctx.draw(t2, 460)]);
         marksT.append(G.parallelMark(T.top[0], T.top[1], 1), G.parallelMark(T.bottom[0], T.bottom[1], 1));
         ctx.sfx('pop');
-        await nibi.say('One pair. ✓', { side: 'right', hold: 520 });
+        await swiftee.say('One pair. ✓', { side: 'right', hold: 520 });
         const l1 = G.edge(T.legL[0], T.legL[1], 'soft'), l2 = G.edge(T.legR[0], T.legR[1], 'soft');
         marksT.append(l1, l2);
         await Promise.all([ctx.draw(l1, 380), ctx.draw(l2, 380)]);
-        await nibi.say('These two lean apart — not parallel.', { side: 'right', hold: 700 });
+        await swiftee.say('These two lean apart — not parallel.', { side: 'right', hold: 700 });
         capT.appendChild(G.label(T.center.x, 338, 'ONE pair of parallel sides', 'tiny'));
 
         /* parallelogram: two pairs */
-        nibi.hush();
-        await nibi.to(P.center.x, 638, { sig: ctx.sig, then: 'point-left', size: 133 });
+        swiftee.hush();
+        await swiftee.to(P.center.x, 638, { sig: ctx.sig, then: 'point-left', size: 133 });
         const p1 = G.edge(P.top[0], P.top[1], 'para'), p2 = G.edge(P.bottom[0], P.bottom[1], 'para');
         marksP.append(p1, p2);
         await Promise.all([ctx.draw(p1, 420), ctx.draw(p2, 420)]);
         marksP.append(G.parallelMark(P.top[0], P.top[1], 1), G.parallelMark(P.bottom[0], P.bottom[1], 1));
-        await nibi.say('One pair here too…', { side: 'left', hold: 620 });
+        await swiftee.say('One pair here too…', { side: 'left', hold: 620 });
         const p3 = G.edge(P.legL[0], P.legL[1], 'para'), p4 = G.edge(P.legR[0], P.legR[1], 'para');
         marksP.append(p3, p4);
         await Promise.all([ctx.draw(p3, 420), ctx.draw(p4, 420)]);
         marksP.append(G.parallelMark(P.legL[0], P.legL[1], 2), G.parallelMark(P.legR[0], P.legR[1], 2));
         ctx.sfx('pop');
-        nibi.set('surprised');
-        await nibi.say('…and <b>another</b> pair! That makes <b>two</b>.', { side: 'left', hold: 800 });
+        swiftee.set('surprised');
+        await swiftee.say('…and <b>another</b> pair! That makes <b>two</b>.', { side: 'left', hold: 800 });
         capP.appendChild(G.label(P.center.x, 338, 'TWO pairs — that’s a parallelogram', 'tiny'));
       }
 
       await done;
-      nibi.hush();
-      await nibi.to(1140, 600, { sig: ctx.sig, then: 'proud', size: 128 });
+      swiftee.hush();
+      await swiftee.to(1140, 600, { sig: ctx.sig, then: 'proud', size: 128 });
       ctx.show(UI.feedback('ok', 'A parallelogram has <b>two</b> pairs of parallel sides — so it is <b>not</b> a trapezium.', { cx: 620, t: 496, w: 700 }));
       await ctx.ready('Next');
     }
@@ -485,8 +485,8 @@
     title: 'Spot Every Trapezium',
     sub: 'Select the shapes with <em>one pair of parallel sides</em>.',
     async enter(ctx) {
-      const { nibi } = ctx;
-      nibi.place(1136, 600, true).resize(138).set('listening');
+      const { swiftee } = ctx;
+      swiftee.place(1136, 600, true).resize(138).set('listening');
 
       const items = [
         { id: 'a', ok: true,  make: () => G.trap({ x: 0, y: 0, a: 90, b: 162, h: 98, type: 'iso' }) },
@@ -529,7 +529,7 @@
 
       const check = UI.btn('Check', async () => {
         const sel = cards.selected();
-        if (!sel.length) { nibi.set('curious'); await nibi.say('Pick the ones with just <b>one</b> pair.', { side: 'left', w: 210 }); return; }
+        if (!sel.length) { swiftee.set('curious'); await swiftee.say('Pick the ones with just <b>one</b> pair.', { side: 'left', w: 210 }); return; }
         tries++;
         const wrong = sel.filter(id => !items.find(i => i.id === id).ok);
         const missed = items.filter(i => i.ok && sel.indexOf(i.id) < 0);
@@ -539,9 +539,9 @@
           items.filter(i => i.ok).forEach(i => cards.mark(i.id, 'ok'));
           items.filter(i => i.ok).forEach(i => showMarks(i, 1));
           say('ok', 'All three — exactly <b>one</b> pair each.');
-          nibi.set('celebrate'); nibi.squash(); ctx.sfx('win');
+          swiftee.set('celebrate'); swiftee.squash(); ctx.sfx('win');
           UI.sparks(ctx.fx, 640, 250, 12);
-          await nibi.say('You’ve got the eye for it!', { side: 'left', w: 200 });
+          await swiftee.say('You’ve got the eye for it!', { side: 'left', w: 200 });
           check.remove();
           done.resolve();
           return;
@@ -553,20 +553,20 @@
           const w = items.find(i => i.id === wrong[0]);
           const why = { b: 'that one has <b>two</b> pairs of parallel sides', d: 'that one has <b>no</b> parallel sides at all', f: 'that one has <b>two</b> pairs — it’s a rectangle' };
           say('near', 'Almost — ' + why[w.id] + '.');
-          nibi.set('incorrect'); ctx.sfx('near');
-          await nibi.say('Look at the sides I marked.', { side: 'left', w: 200 });
+          swiftee.set('incorrect'); ctx.sfx('near');
+          await swiftee.say('Look at the sides I marked.', { side: 'left', w: 200 });
           showMarks(w, w.id === 'd' ? 0 : 2);
         } else {
           say('near', 'Good so far — but you’ve <b>missed one</b>.');
-          nibi.set('curious'); ctx.sfx('near');
-          await nibi.say('One more is hiding in there…', { side: 'left', w: 210 });
+          swiftee.set('curious'); ctx.sfx('near');
+          await swiftee.say('One more is hiding in there…', { side: 'left', w: 210 });
         }
 
         if (tries === 2) {
           await ctx.wait(700);
-          nibi.set('hint');
+          swiftee.set('hint');
           NL.Sound.playHint();
-          await nibi.say('Here — I’ll mark them all.', { side: 'left', w: 200 });
+          await swiftee.say('Here — I’ll mark them all.', { side: 'left', w: 200 });
           items.forEach(i => showMarks(i, i.ok ? 1 : (i.id === 'd' ? 0 : 2)));
         }
         if (tries >= 3) {
@@ -574,8 +574,8 @@
           cards.lock(); cards.clearMarks();
           items.filter(i => i.ok).forEach(i => cards.mark(i.id, 'ok'));
           say('ok', 'These three are the trapeziums — <b>one</b> pair each.');
-          nibi.set('encouraging');
-          await nibi.say('Now you know the trick: count the <b>pairs</b>.', { side: 'left', w: 220 });
+          swiftee.set('encouraging');
+          await swiftee.say('Now you know the trick: count the <b>pairs</b>.', { side: 'left', w: 220 });
           check.remove();
           done.resolve();
         }
@@ -614,7 +614,7 @@
     title: 'The Trapezium Family',
     sub: 'Three different looks, <em>one shared property</em>. Tap each one.',
     async enter(ctx) {
-      const { nibi, board } = ctx;
+      const { swiftee, board } = ctx;
       const g = board.fresh('family');
 
       const kinds = [
@@ -647,7 +647,7 @@
         }
       ];
 
-      nibi.place(232, 600, true).resize(143).set('presenting');
+      swiftee.place(232, 600, true).resize(143).set('presenting');
 
       let opened = 0;
       const done = ctx.once();
@@ -682,15 +682,15 @@
         k.nameEl.setAttribute('class', 'lbl dim');
         k.extra(k.sh, k.mark);
         k.mark.classList.add('on');
-        nibi.hush();
-        await nibi.to(Math.max(268, k.cx - 160), 664, { sig: ctx.sig, then: k.state, size: 138 });
-        await nibi.say(k.line, { side: k.cx > 800 ? 'left' : 'right' });
+        swiftee.hush();
+        await swiftee.to(Math.max(268, k.cx - 160), 664, { sig: ctx.sig, then: k.state, size: 138 });
+        await swiftee.say(k.line, { side: k.cx > 800 ? 'left' : 'right' });
         if (opened === 3) {
           await ctx.wait(300);
-          nibi.hush();
-          await nibi.to(640, 600, { sig: ctx.sig, then: 'celebrate', size: 143 });
-          nibi.squash(); ctx.sfx('ok');
-          await nibi.say('All three have <b>one pair</b> of parallel sides. That’s what counts.', { side: 'up', dx: -150 });
+          swiftee.hush();
+          await swiftee.to(640, 600, { sig: ctx.sig, then: 'celebrate', size: 143 });
+          swiftee.squash(); ctx.sfx('ok');
+          await swiftee.say('All three have <b>one pair</b> of parallel sides. That’s what counts.', { side: 'up', dx: -150 });
           done.resolve();
         }
       }

@@ -1,5 +1,5 @@
 /* ============================================================
-   Design tokens — "Nibi Maths" lesson system
+   Design tokens — the lesson system Swiftee teaches in
    One warm, sophisticated palette shared by every lesson stage.
    ============================================================ */
 :root {
@@ -16,10 +16,13 @@
   --ink-2:       #4c5a4f;
   --ink-3:       #8b978d;
 
-  /* Brand (tuned to Nibi's cornflower body) */
-  --brand:       #4a7ce6;
-  --brand-deep:  #2f5cba;
-  --brand-soft:  #e9f0fe;
+  /* Brand (tuned to Swiftee's teal plumage, and kept clear of the
+     diagram greens below — same contrast as the palette it replaced) */
+  --brand:       #159289;
+  --brand-lift:  #22a89b;   /* the lit top of a button           */
+  --brand-deep:  #0c6b66;
+  --brand-soft:  #e2f4f1;
+  --brand-rgb:   12, 107, 102;
 
   /* Diagram language — each role has ONE consistent colour */
   --para:        #2f5d34;   /* parallel sides (a, b)        */

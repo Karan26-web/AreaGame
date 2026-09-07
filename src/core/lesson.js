@@ -3,7 +3,7 @@
    * one persistent 1280x720 stage, uniformly scaled
    * one persistent SVG board (groups survive between stages by
      key, which is what makes the trapezium feel continuous)
-   * one persistent Nibi
+   * one persistent Swiftee
    * stages are async functions: they build, choreograph, wait for
      the learner, then `await ctx.ready()` to hand over.
    ============================================================ */
@@ -64,7 +64,7 @@
       this.uiLayer = document.getElementById('ui-layer');
       this.fxLayer = document.getElementById('fx-layer');
       this.board = board(document.getElementById('board'));
-      this.nibi = new NL.Nibi(document.getElementById('nibi-layer'));
+      this.swiftee = new NL.Swiftee(document.getElementById('swiftee-layer'));
       this.card = document.getElementById('card');
       this.head = document.getElementById('lesson-head');
       this.headTitle = document.getElementById('lesson-title');
@@ -96,10 +96,10 @@
     },
 
     /* ---------- the opening sequence ----------
-       world → atmosphere → Nibi → panel → heading → lesson        */
+       world → atmosphere → Swiftee → panel → heading → lesson        */
     async open() {
       const { wait } = NL.Anim;
-      const n = this.nibi;
+      const n = this.swiftee;
       NL.World.build();
 
       /* ?skip jumps straight into the lesson (used when re-entering) */
@@ -118,14 +118,14 @@
 
       await NL.World.reveal();
 
-      /* Nibi bounces in across the Mars ground, below the panel */
+      /* Swiftee flies in across the Mars ground, below the panel */
       n.show(); n.set('walk', { flip: false });
       NL.Sfx.play('whoosh');
       await n.to(214, 782, { dur: 900, arc: 54, then: 'curious' });
       NL.Sfx.play('land');
       await n.fx('hop');
       await wait(180);
-      n.set('wink'); await wait(300);
+      n.set('wink'); await wait(620);      /* long enough for the wink to read */
       n.set('curious'); await wait(220);
 
       /* the panel is placed into the world */
@@ -172,7 +172,7 @@
         setTimeout(() => oldUi.remove(), 300);
       }
       this.fxLayer.innerHTML = '';
-      this.nibi.hush();
+      this.swiftee.hush();
 
       /* keep only the board groups the incoming stage wants */
       const keep = (opts.back ? [] : (def.keep || []));
@@ -213,7 +213,7 @@
       const ctx = {
         sig, def,
         board: L.board,
-        nibi: L.nibi,
+        swiftee: L.swiftee,
         fx: L.fxLayer,
         host,
         add(...els) { els.forEach(e => e && host.appendChild(e)); return els[0]; },
@@ -225,13 +225,13 @@
         world: NL.World,
         sfx: n => NL.Sfx.play(n),
 
-        /* the hand-over beat: Nibi steps back, a soft cue, then silence.
+        /* the hand-over beat: Swiftee steps back, a soft cue, then silence.
            Used at every explanation -> interaction seam so the learner
            learns the rhythm of the lesson rather than reading a cue.     */
         async turn(o) {
           o = o || {};
-          L.nibi.hush();
-          L.nibi.set(o.state || 'listening');
+          L.swiftee.hush();
+          L.swiftee.set(o.state || 'listening');
           NL.Sound.playUI('nav');
           await NL.Anim.wait(o.pause === undefined ? 420 : o.pause, sig);
         },

@@ -55,13 +55,13 @@
     title: 'How Much Space?',
     sub: '<em>Area</em> is the flat space inside a shape.',
     async enter(ctx) {
-      const { nibi } = ctx;
+      const { swiftee } = ctx;
       const g = hero(ctx);
 
       ctx.headline('Now the big question.', { l: PANEL, t: 214, w: 460 });
-      nibi.place(246, 600, true).resize(158).set('thinking');
+      swiftee.place(246, 600, true).resize(158).set('thinking');
       await ctx.wait(520);
-      await nibi.say('Okay… but how much <b>space</b> does it cover?', { side: 'right', w: 290 });
+      await swiftee.say('Okay… but how much <b>space</b> does it cover?', { side: 'right', w: 290 });
 
       /* a unit grid, clipped to the shape, sweeps in when tapped */
       const defs = s('defs');
@@ -96,11 +96,11 @@
         tapper.dataset.used = '1';
         tapper.remove();
         ctx.sfx('swoosh');
-        nibi.set('excited');
+        swiftee.set('excited');
         await ctx.tween(900, t => rect.setAttribute('width', Math.max(0, (T.b + 8) * t)), { ease: 'inOut' });
         ctx.sfx('pop');
         ctx.note('<b>Area</b> is the flat space inside a shape.<br>Now — how do we <b>measure</b> it?', { l: PANEL, t: 272, w: 460 });
-        await nibi.say('Counting those one by one would take <b>forever</b>. We need a rule.', { side: 'right', w: 290 });
+        await swiftee.say('Counting those one by one would take <b>forever</b>. We need a rule.', { side: 'right', w: 290 });
         done.resolve();
       });
 
@@ -121,7 +121,7 @@
     title: 'Naming the Parts',
     sub: 'Two <em>parallel sides</em> and one <em class="h">perpendicular height</em>.',
     async enter(ctx) {
-      const { nibi } = ctx;
+      const { swiftee } = ctx;
       const g = hero(ctx);
       const L = s('g', { 'data-id': 'parts' });
       g.appendChild(L);
@@ -129,41 +129,41 @@
       ctx.headline('Three measurements matter.', { l: PANEL, t: 214, w: 460 });
 
       /* --- a --- */
-      nibi.place(330, 600, true).resize(148).set('point-right');
+      swiftee.place(330, 600, true).resize(148).set('point-right');
       const aE = G.edge(T.top[0], T.top[1], 'para'); L.appendChild(aE);
       await ctx.draw(aE, 420);
       const aL = G.label(T.top[0].x + T.a / 2, T.y - 26, 'a', 'para'); L.appendChild(aL);
       UI.appear(aL); ctx.sfx('pop');
       L.appendChild(G.parallelMark(T.top[0], T.top[1], 1));
-      await nibi.say('This parallel side is <span class="para">a</span>.', { side: 'right' });
+      await swiftee.say('This parallel side is <span class="para">a</span>.', { side: 'right' });
 
       /* --- b --- */
-      nibi.hush();
+      swiftee.hush();
       const bE = G.edge(T.bottom[0], T.bottom[1], 'para'); L.appendChild(bE);
       await ctx.draw(bE, 420);
       const bL = G.label(T.x + T.b / 2, T.y + T.h + 30, 'b', 'para'); L.appendChild(bL);
       UI.appear(bL); ctx.sfx('pop');
       L.appendChild(G.parallelMark(T.bottom[0], T.bottom[1], 1));
-      await nibi.say('And the other one is <span class="para">b</span>.', { side: 'right' });
+      await swiftee.say('And the other one is <span class="para">b</span>.', { side: 'right' });
 
-      /* --- Nibi's own mistake --- */
-      nibi.hush();
-      await nibi.to(300, 600, { sig: ctx.sig, then: 'point-left', size: 148 });
+      /* --- Swiftee's own mistake --- */
+      swiftee.hush();
+      await swiftee.to(300, 600, { sig: ctx.sig, then: 'point-left', size: 148 });
       const legE = G.edge(T.legL[0], T.legL[1], 'slant'); L.appendChild(legE);
       await ctx.draw(legE, 380);
       const legL = G.label(T.legL[0].x - 26, T.y + T.h / 2 + 6, 'h ?', 'dim', 'end'); L.appendChild(legL);
       legL.style.fill = 'var(--warn)';
       UI.appear(legL);
-      nibi.set('proud');
-      await nibi.say('And <b>that</b> must be the height. Easy!', { side: 'right', hold: 900 });
+      swiftee.set('proud');
+      await swiftee.say('And <b>that</b> must be the height. Easy!', { side: 'right', hold: 900 });
 
-      nibi.hush(); nibi.set('curious'); await ctx.wait(420);
-      nibi.set('confused'); await ctx.wait(560);
-      nibi.set('realization'); ctx.sfx('boing');
-      await nibi.say('…hold on a second.', { side: 'right', hold: 620 });
+      swiftee.hush(); swiftee.set('curious'); await ctx.wait(420);
+      swiftee.set('confused'); await ctx.wait(560);
+      swiftee.set('realization'); ctx.sfx('boing');
+      await swiftee.say('…hold on a second.', { side: 'right', hold: 620 });
 
       /* stand the slanted side up next to the height: it overshoots */
-      nibi.hush(); nibi.set('measuring');
+      swiftee.hush(); swiftee.set('measuring');
       const legLen = G.len(G.sub(T.TL, T.BL));
       const stand = s('line', {
         x1: T.BL.x, y1: T.BL.y, x2: T.TL.x, y2: T.TL.y,
@@ -194,16 +194,16 @@
       guide.style.transition = over.style.transition = 'opacity 300ms';
       requestAnimationFrame(() => { guide.style.opacity = .8; over.style.opacity = .95; });
       ctx.sfx('near');
-      nibi.set('surprised');
-      await nibi.say('It <b>pokes out</b>! The slanted side is too long.', { side: 'right', hold: 1200 });
+      swiftee.set('surprised');
+      await swiftee.say('It <b>pokes out</b>! The slanted side is too long.', { side: 'right', hold: 1200 });
 
       [stand, over, guide, legE, legL].forEach(e => { e.style.transition = 'opacity 320ms'; e.style.opacity = 0; });
       await ctx.wait(360);
       [stand, over, guide, legE, legL].forEach(e => e.remove());
 
       /* --- learner picks the real height --- */
-      nibi.hush();
-      await nibi.to(560, 600, { sig: ctx.sig, then: 'listening', size: 143 });
+      swiftee.hush();
+      await swiftee.to(560, 600, { sig: ctx.sig, then: 'listening', size: 143 });
       ctx.headline('So which line is the <b>height</b>?', { l: PANEL, t: 214, w: 460 });
       ctx.note('Tap it on the shape.', { l: PANEL, t: 274 });
 
@@ -240,10 +240,10 @@
           const hLbl = G.label(T.TL.x + 19, T.y + T.h / 2, 'h', 'hgt', 'start'); L.appendChild(hLbl);
           UI.appear(hLbl);
           UI.sparks(ctx.fx, T.foot.x, T.y + T.h / 2, 8, 'var(--hgt)');
-          await nibi.react('ok', 'Yes! Straight down, at a right angle.', { side: 'up', dx: -140 });
+          await swiftee.react('ok', 'Yes! Straight down, at a right angle.', { side: 'up', dx: -140 });
 
           /* and it is the same everywhere between the two parallel sides */
-          nibi.hush(); nibi.set('measuring');
+          swiftee.hush(); swiftee.set('measuring');
           const probe = G.edge({ x: T.TL.x, y: T.y }, { x: T.TL.x, y: T.foot.y }, 'hgt');
           probe.setAttribute('stroke-width', 6);
           probe.style.opacity = .55;
@@ -255,15 +255,15 @@
             probe.setAttribute('x1', x); probe.setAttribute('x2', x);
           }, { ease: 'linear' });
           probe.remove();
-          await nibi.say('Wherever you measure it, the gap is the <b>same</b>.', { side: 'up', dx: -170 });
+          await swiftee.say('Wherever you measure it, the gap is the <b>same</b>.', { side: 'up', dx: -170 });
           done.resolve();
         } else {
-          await nibi.react('wrong', 'That’s the one that fooled me — it <b>leans</b>.', { side: 'up', dx: -140, state: 'incorrect' });
-          busy = false; nibi.set('listening');
+          await swiftee.react('wrong', 'That’s the one that fooled me — it <b>leans</b>.', { side: 'up', dx: -140, state: 'incorrect' });
+          busy = false; swiftee.set('listening');
         }
       }
       await done;
-      nibi.hush();
+      swiftee.hush();
 
       ctx.headline('Now we have all three.', { l: PANEL, t: 214, w: 460 });
       ctx.note('', { l: PANEL, t: 274 });
@@ -286,13 +286,13 @@
     title: 'Building the Formula',
     sub: 'Two trapeziums make a shape we <em>already know</em>.',
     async enter(ctx) {
-      const { nibi } = ctx;
+      const { swiftee } = ctx;
       const g = hero(ctx);
       const L = labelHero(g);
 
       ctx.headline('Watch this trick.', { l: DPANEL, t: 196, w: 400 });
-      nibi.place(560, 600, true).resize(154).set('presenting');
-      await nibi.say('One trapezium is hard. <b>Two</b> is easy!', { side: 'up', dx: -150 });
+      swiftee.place(560, 600, true).resize(154).set('presenting');
+      await swiftee.say('One trapezium is hard. <b>Two</b> is easy!', { side: 'up', dx: -150 });
 
       /* 1 — an identical copy */
       const copyG = s('g', { 'data-id': 'copy' });
@@ -307,22 +307,22 @@
       copyG.setAttribute('transform', `translate(${OFF.x}, ${OFF.y})`);
       requestAnimationFrame(() => copy.style.opacity = 1);
       ctx.sfx('pop');
-      nibi.hush(); nibi.set('split');
-      await nibi.say('An <b>identical</b> copy — same sides, same height.', { side: 'up', dx: -160, hold: 1000 });
+      swiftee.hush(); swiftee.set('split');
+      await swiftee.say('An <b>identical</b> copy — same sides, same height.', { side: 'up', dx: -160, hold: 1000 });
 
-      /* 2 — Nibi plants itself directly under the pivot and turns the copy
+      /* 2 — Swiftee plants itself directly under the pivot and turns the copy
              around that point: the rotation happens over its head        */
-      nibi.hush();
-      await nibi.to(M.x, 600, { sig: ctx.sig, then: 'determined', size: 140 });
-      await nibi.fx('squash');                   /* anticipation          */
+      swiftee.hush();
+      await swiftee.to(M.x, 600, { sig: ctx.sig, then: 'determined', size: 140 });
+      await swiftee.fx('squash');                   /* anticipation          */
       NL.Sound.playShape('morph');
       await ctx.tween(1750, t => {
         copyG.setAttribute('transform',
           `translate(${OFF.x * (1 - t)}, ${OFF.y * (1 - t)}) rotate(${180 * t}, ${M.x}, ${M.y})`);
-        if (t > .5 && !nibi.flip) nibi.set('determined', { flip: true });
+        if (t > .5 && !swiftee.flip) swiftee.set('determined', { flip: true });
       }, { ease: 'inOut' });
       NL.Sound.playShape('join');
-      nibi.hush(); nibi.set('excited'); nibi.squash();
+      swiftee.hush(); swiftee.set('excited'); swiftee.squash();
       await ctx.wait(700);                       /* let the join land */
 
       /* 3 — trace what the two of them make */
@@ -332,11 +332,11 @@
       });
       g.appendChild(outline);
       await ctx.draw(outline, 900);
-      await nibi.say('Look what they make — a <b>parallelogram</b>!', { side: 'up', dx: -140 });
+      await swiftee.say('Look what they make — a <b>parallelogram</b>!', { side: 'up', dx: -140 });
 
       /* 4 — the learner works out the new base */
-      nibi.hush();
-      await nibi.to(1152, 600, { sig: ctx.sig, then: 'listening', size: 133 });
+      swiftee.hush();
+      await swiftee.to(1152, 600, { sig: ctx.sig, then: 'listening', size: 133 });
       ctx.headline('How long is its <b>base</b> now?', { l: DPANEL, t: 196, w: 400 });
 
       const gate = ctx.once();
@@ -347,11 +347,11 @@
           api.busy(true);
           if (it.id === 'sum') {
             api.mark('sum', 'ok'); api.dimOthers('sum'); api.lock();
-            await nibi.react('ok', 'Exactly — <span class="para">b</span> then <span class="para">a</span>, end to end.', { side: 'left' });
+            await swiftee.react('ok', 'Exactly — <span class="para">b</span> then <span class="para">a</span>, end to end.', { side: 'left' });
             gate.resolve();
           } else {
             api.mark(it.id, 'near');
-            await nibi.react('wrong', it.id === 'prod'
+            await swiftee.react('wrong', it.id === 'prod'
               ? 'We’re laying the sides <b>next to</b> each other, not multiplying.'
               : 'Nothing is taken away — the two sides <b>join up</b>.', { side: 'left' });
             api.clearMarks(); api.busy(false);
@@ -360,7 +360,7 @@
       });
       ctx.show(ch.el, { delay: 140 });
       await gate;
-      nibi.hush();
+      swiftee.hush();
       UI.vanish(ch.el, 240);
 
       /* 5 — dimension the parallelogram, then reason about its area */
@@ -382,8 +382,8 @@
 
       /* --- why base x height? because a parallelogram is a pushed-over
              rectangle: straighten it and nothing is gained or lost --- */
-      nibi.hush(); nibi.set('explaining');
-      await nibi.say('Why base × height? Watch it straighten.', { side: 'left', hold: 700 });
+      swiftee.hush(); swiftee.set('explaining');
+      await swiftee.say('Why base × height? Watch it straighten.', { side: 'left', hold: 700 });
       const heroPoly = q(g, 'poly');
       const shear = s('polygon', {
         points: G.str(COMB), class: 'shape', 'data-id': 'shear'
@@ -403,7 +403,7 @@
           x: p.x + (REC[i].x - p.x) * t, y: p.y + (REC[i].y - p.y) * t
         }))));
       }, { ease: 'inOut' });
-      await nibi.say('Same base. Same height. <b>Same space.</b>', { side: 'left', hold: 1250 });
+      await swiftee.say('Same base. Same height. <b>Same space.</b>', { side: 'left', hold: 1250 });
       await ctx.tween(760, t => {
         shear.setAttribute('points', G.str(REC.map((p, i) => ({
           x: p.x + (COMB[i].x - p.x) * t, y: p.y + (COMB[i].y - p.y) * t
@@ -414,13 +414,13 @@
       await ctx.wait(280);
       shear.remove(); hDim.remove();
 
-      nibi.hush(); nibi.set('teaching');
+      swiftee.hush(); swiftee.set('teaching');
       st.add('area = <b>(a + b) × h</b>');
-      await nibi.say('That’s <b>both</b> trapeziums together.', { side: 'left', hold: 950 });
+      await swiftee.say('That’s <b>both</b> trapeziums together.', { side: 'left', hold: 950 });
 
-      /* 6 — halve it (Nibi stays right so the a + b dimension stays readable) */
-      nibi.hush(); nibi.set('split');
-      await nibi.say('But the two halves are <b>identical</b> — we made one from the other.',
+      /* 6 — halve it (Swiftee stays right so the a + b dimension stays readable) */
+      swiftee.hush(); swiftee.set('split');
+      await swiftee.say('But the two halves are <b>identical</b> — we made one from the other.',
         { side: 'left', w: 250, hold: 900 });
       copy.style.transition = 'opacity 520ms var(--ease)';
       copy.style.opacity = .26;
@@ -437,8 +437,8 @@
       NL.Sound.playDiscovery();
       ctx.head('Building the Formula', 'Area = ½ × <em>(a + b)</em> × <em class="h">h</em>');
       UI.sparks(ctx.fx, DPANEL + 140, 470, 12);
-      nibi.set('celebrate'); await nibi.squash(); ctx.sfx('win');
-      await nibi.say('We <b>built</b> it. Nothing to memorise!', { side: 'left', w: 210 });
+      swiftee.set('celebrate'); await swiftee.squash(); ctx.sfx('win');
+      await swiftee.say('We <b>built</b> it. Nothing to memorise!', { side: 'left', w: 210 });
       await ctx.ready('Next');
     }
   });
@@ -451,7 +451,7 @@
     title: 'Area of a Trapezium',
     sub: 'Area = ½ × <em>(a + b)</em> × <em class="h">h</em>',
     async enter(ctx) {
-      const { nibi } = ctx;
+      const { swiftee } = ctx;
       const g = hero(ctx);
       labelHero(g);
       /* the copy leaves; the trapezium itself does not move */
@@ -481,7 +481,7 @@
       ctx.show(f.el, { delay: 120 });
       ctx.note('Tap each letter to see where it lives.', { l: PANEL, t: 306 });
 
-      nibi.place(1104, 600, true).resize(141).set('proud');
+      swiftee.place(1104, 600, true).resize(141).set('proud');
       await ctx.wait(280);
 
       const legend = NL.h('div.legend');
@@ -509,10 +509,10 @@
           const row = NL.h('div.row', {}, [NL.h('span.key.' + cls, { text: key }), NL.h('span', { html: txt })]);
           legend.appendChild(row); UI.appear(row, { dy: 6 });
           opened++;
-          if (opened === 1) nibi.set('point-right', { flip: true });
+          if (opened === 1) swiftee.set('point-right', { flip: true });
           if (opened === 3) {
-            nibi.set('celebrate'); nibi.squash(); ctx.sfx('ok');
-            await nibi.say('<b>a</b> and <b>b</b> are parallel.<br><b>h</b> is perpendicular.', { side: 'left', w: 250 });
+            swiftee.set('celebrate'); swiftee.squash(); ctx.sfx('ok');
+            await swiftee.say('<b>a</b> and <b>b</b> are parallel.<br><b>h</b> is perpendicular.', { side: 'left', w: 250 });
             done.resolve();
           }
         });
@@ -531,7 +531,7 @@
     title: 'What the Formula Means',
     sub: '½ × <em>(sum of parallel sides)</em> × <em class="h">perpendicular height</em>',
     async enter(ctx) {
-      const { nibi } = ctx;
+      const { swiftee } = ctx;
       const g = hero(ctx);
       labelHero(g);
 
@@ -554,8 +554,8 @@
       ctx.show(f.el, { delay: 100 });
       ctx.note('Drag each piece onto what it means.', { l: PANEL, t: 294 });
 
-      nibi.place(300, 600, true).resize(133).set('explaining');
-      await nibi.say('A formula is a <b>sentence</b> in symbols.', { side: 'right', w: 220 });
+      swiftee.place(300, 600, true).resize(133).set('explaining');
+      await swiftee.say('A formula is a <b>sentence</b> in symbols.', { side: 'right', w: 220 });
 
       const rows = [
         { id: 'sum', label: 'sum of the parallel sides', y: 344 },
@@ -582,19 +582,19 @@
         async onAccept(c) {
           if (c.id === 'sum') { gA.style.opacity = .26; gB.style.opacity = .26; }
           else gH.style.opacity = .26;
-          nibi.set('happy'); nibi.squash();
+          swiftee.set('happy'); swiftee.squash();
         },
         async onReject(c) {
-          nibi.set('incorrect'); ctx.sfx('near');
-          await nibi.say(c.id === 'hgt'
+          swiftee.set('incorrect'); ctx.sfx('near');
+          await swiftee.say(c.id === 'hgt'
             ? '<b>h</b> is a single measurement — the straight-down one.'
             : '<b>a + b</b> adds the two parallel sides together.', { side: 'right', w: 240 });
         },
         async onComplete() {
-          nibi.set('celebrate'); nibi.squash(); ctx.sfx('ok');
+          swiftee.set('celebrate'); swiftee.squash(); ctx.sfx('ok');
           ctx.show(UI.feedback('ok', 'Area = ½ × <b>(sum of parallel sides)</b><br>× <b>perpendicular height</b>',
             { l: 84, t: 508, w: 430 }));
-          await nibi.say('Now it <b>means</b> something.', { side: 'right', w: 200 });
+          await swiftee.say('Now it <b>means</b> something.', { side: 'right', w: 200 });
           done.resolve();
         }
       });
@@ -612,7 +612,7 @@
     title: 'One Formula, Every Trapezium',
     sub: 'Does changing the shape change <em>the rule</em>?',
     async enter(ctx) {
-      const { nibi, board } = ctx;
+      const { swiftee, board } = ctx;
       const g = board.fresh('universal');
 
 
@@ -645,8 +645,8 @@
         G.popIn(grp, sh.center, { delay: 120 + i * 160 });
       });
 
-      nibi.place(1146, 600, true).resize(141).set('pondering');
-      await nibi.say('One formula… or three?', { side: 'left', w: 210 });
+      swiftee.place(1146, 600, true).resize(141).set('pondering');
+      await swiftee.say('One formula… or three?', { side: 'left', w: 210 });
 
       const done = ctx.once();
       const ch = UI.choices({
@@ -656,14 +656,14 @@
           api.busy(true); api.lock();
           if (it.id === 'no') {
             api.mark('no', 'ok'); api.dim('yes');
-            await nibi.react('ok', 'Let’s prove it.', { side: 'left', w: 180 });
+            await swiftee.react('ok', 'Let’s prove it.', { side: 'left', w: 180 });
           } else {
             api.mark('yes', 'near');
-            await nibi.react('wrong', 'Let’s test it — same trick on all three.', { side: 'left', w: 230 });
+            await swiftee.react('wrong', 'Let’s test it — same trick on all three.', { side: 'left', w: 230 });
           }
           UI.vanish(ch.el, 240);
-          nibi.hush();
-          await nibi.to(1146, 600, { sig: ctx.sig, then: 'determined', size: 131 });
+          swiftee.hush();
+          await swiftee.to(1146, 600, { sig: ctx.sig, then: 'determined', size: 131 });
           await prove();
           done.resolve();
         }
@@ -678,7 +678,7 @@
           return ctx.tween(1050, t => k.copyG.setAttribute('transform', `rotate(${180 * t}, ${m.x}, ${m.y})`), { ease: 'inOut' });
         }));
         ctx.sfx('snap');
-        nibi.set('excited'); nibi.squash();
+        swiftee.set('excited'); swiftee.squash();
         await ctx.wait(260);
         await NL.Anim.stagger(kinds, 180, k => {
           const m = G.mid(k.sh.TR, k.sh.BR);
@@ -698,8 +698,8 @@
         }, ctx.sig);
         await ctx.wait(680);
         ctx.show(UI.feedback('ok', 'The shape changes. The <b>formula does not</b>.', { cx: 640, t: 496 }));
-        nibi.set('celebrate'); nibi.squash(); ctx.sfx('win');
-        await nibi.say('Every trapezium, same rule.', { side: 'left', w: 230 });
+        swiftee.set('celebrate'); swiftee.squash(); ctx.sfx('win');
+        await swiftee.say('Every trapezium, same rule.', { side: 'left', w: 230 });
       }
 
       await done;

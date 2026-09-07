@@ -38,11 +38,11 @@
     title: 'Work One Out',
     sub: 'a = <em>18 cm</em>,  b = <em>20 cm</em>,  h = <em class="h">10 cm</em>',
     async enter(ctx) {
-      const { nibi } = ctx;
+      const { swiftee } = ctx;
       const g = example(ctx);
 
       ctx.show(UI.instruction('What do we do <b>first</b>?', { l: PANEL, t: 150 }));
-      nibi.place(286, 600, true).resize(148).set('curious');
+      swiftee.place(286, 600, true).resize(148).set('curious');
 
       const gate = ctx.once();
       const ch = UI.choices({
@@ -57,8 +57,8 @@
           api.busy(true);
           if (it.id === 'sum') {
             api.mark('sum', 'ok'); api.dimOthers('sum'); api.lock();
-            nibi.set('point-left');
-            await nibi.react('ok', 'Yes — <span class="para">18</span> and <span class="para">20</span>.', { side: 'right', state: 'correct' });
+            swiftee.set('point-left');
+            await swiftee.react('ok', 'Yes — <span class="para">18</span> and <span class="para">20</span>.', { side: 'right', state: 'correct' });
             gate.resolve();
           } else {
             api.mark(it.id, 'near');
@@ -67,14 +67,14 @@
               all:   'That would give the <b>perimeter</b> — the distance around.',
               half:  'The ½ multiplies the <b>whole</b> thing, not just h.'
             }[it.id];
-            await nibi.react('wrong', why, { side: 'right' });
+            await swiftee.react('wrong', why, { side: 'right' });
             api.clearMarks(); api.busy(false);
           }
         }
       });
       ctx.show(ch.el, { delay: 160 });
       await gate;
-      nibi.hush();
+      swiftee.hush();
       UI.vanish(ch.el, 260);
       ctx.host.querySelectorAll('.instruction').forEach(e => e.remove());
       ctx.show(UI.instruction('Step by step.', { l: PANEL, t: 150 }));
@@ -85,7 +85,7 @@
       st.add('A = ½ × ( <span class="em">a</span> + <span class="em">b</span> ) × h', { lead: '1' });
       await ctx.gate('Next step', { small: true });
       st.add('A = ½ × ( <span class="em">18</span> + <span class="em">20</span> ) × 10', { lead: '2' });
-      nibi.set('point-left');
+      swiftee.set('point-left');
 
       /* the learner does the arithmetic, rather than tapping through it */
       await ctx.turn();
@@ -101,7 +101,7 @@
             sumGate.resolve();
           } else {
             api.mark(it.id, 'near');
-            await nibi.react('wrong', it.id === '380'
+            await swiftee.react('wrong', it.id === '380'
               ? 'That’s 18 <b>×</b> 20. We’re adding them.'
               : 'That’s the <b>difference</b>. We want the total.', { side: 'right', w: 240 });
             api.clearMarks(); api.busy(false);
@@ -116,14 +116,14 @@
 
       st.add('A = ½ × <span class="em">38</span> × 10', { lead: '3' });
       await ctx.gate('Next step', { small: true });
-      nibi.hush(); nibi.set('teaching');
+      swiftee.hush(); swiftee.set('teaching');
       st.add('A = 19 × 10', { lead: '4' });
       await ctx.gate('And the answer?', { small: true });
       const fin = st.add('A = <b>190 cm²</b>', { lead: '5', final: true });
       fin.style.fontSize = '31px';
       UI.sparks(ctx.fx, PANEL + 120, 470, 10);
-      nibi.set('celebrate'); nibi.squash(); ctx.sfx('win');
-      await nibi.say('One hundred and ninety square centimetres!', { side: 'right' });
+      swiftee.set('celebrate'); swiftee.squash(); ctx.sfx('win');
+      await swiftee.say('One hundred and ninety square centimetres!', { side: 'right' });
       await ctx.ready('Next');
     }
   });
@@ -136,12 +136,12 @@
     title: 'Fill in the Formula',
     sub: 'Drag each measurement into <em>its own place</em>.',
     async enter(ctx) {
-      const { nibi } = ctx;
+      const { swiftee } = ctx;
       example(ctx);
 
       ctx.headline('Now you build it.', { l: PANEL, t: 150 });
       ctx.note('Drag each measurement into the right place.', { l: PANEL, t: 200 });
-      nibi.place(286, 600, true).resize(146).set('listening');
+      swiftee.place(286, 600, true).resize(146).set('listening');
 
       const f = UI.formula([
         { v: 'A' }, { op: '=' }, { v: '½' }, { op: '×' }, { op: '(' },
@@ -164,20 +164,20 @@
           if (slot.id === 'hh') return chip.id === 'v10';
           return chip.id === 'v18' || chip.id === 'v20';
         },
-        async onAccept() { nibi.set('thumbs'); nibi.squash(); },
+        async onAccept() { swiftee.set('thumbs'); swiftee.squash(); },
         async onReject(chip, slot) {
-          nibi.set('incorrect'); ctx.sfx('near');
+          swiftee.set('incorrect'); ctx.sfx('near');
           const why = chip.id === 'v38'
             ? '38 is already 18 + 20. The brackets want the two sides <b>separately</b>.'
             : slot.id === 'hh'
               ? 'The last slot wants the <span class="hgt">perpendicular height</span> — straight down.'
               : 'Those brackets are for the two <span class="para">parallel sides</span>.';
-          await nibi.say(why, { side: 'right', w: 260 });
+          await swiftee.say(why, { side: 'right', w: 260 });
         },
         async onComplete() {
-          nibi.set('celebrate'); nibi.squash(); ctx.sfx('win');
+          swiftee.set('celebrate'); swiftee.squash(); ctx.sfx('win');
           ctx.show(UI.feedback('ok', 'A = ½ × ( 18 + 20 ) × 10', { l: PANEL + 48, t: 492 }));
-          await nibi.say('Perfect fit. The order of <b>18</b> and <b>20</b> doesn’t matter — we add them.', { side: 'right', w: 300 });
+          await swiftee.say('Perfect fit. The order of <b>18</b> and <b>20</b> doesn’t matter — we add them.', { side: 'right', w: 300 });
           done.resolve();
         }
       });
@@ -195,7 +195,7 @@
     title: 'Find the Area',
     sub: 'A = ½ × ( <em>18</em> + <em>20</em> ) × <em class="h">10</em>',
     async enter(ctx) {
-      const { nibi } = ctx;
+      const { swiftee } = ctx;
       const g = example(ctx);
 
       ctx.show(UI.instruction('Choose the correct area.', { l: PANEL, t: 150 }));
@@ -206,7 +206,7 @@
       ], { l: PANEL, t: 206 }, { size: 30 });
       ctx.show(f.el, { delay: 120 });
 
-      nibi.place(286, 600, true).resize(146).set('thinking');
+      swiftee.place(286, 600, true).resize(146).set('thinking');
 
       const done = ctx.once();
       const ch = UI.choices({
@@ -220,7 +220,7 @@
           api.busy(true);
           if (it.id === 'a190') {
             api.mark('a190', 'ok'); api.dimOthers('a190'); api.lock();
-            nibi.set('celebrate'); nibi.squash(); ctx.sfx('win');
+            swiftee.set('celebrate'); swiftee.squash(); ctx.sfx('win');
             const st = UI.steps({ l: PANEL - 10, t: 544 }, { size: 24 });
             ctx.add(st.el);
             st.add('½ × 38 × 10  =  19 × 10  =  <b>190 cm²</b>', { final: true });
@@ -235,14 +235,14 @@
             g.appendChild(badge);
             setTimeout(() => badge.style.opacity = 1, 300);
             UI.sparks(ctx.fx, E.center.x, E.center.y, 12);
-            await nibi.say('That’s it!', { side: 'right' });
+            await swiftee.say('That’s it!', { side: 'right' });
             done.resolve();
           } else {
             api.mark(it.id, 'near');
             const why = it.id === 'a380'
               ? 'That’s 38 × 10 — you <b>forgot the ½</b>.'
               : 'Check the sum: 18 + 20 is <b>38</b>, not 54.';
-            await nibi.react('wrong', why, { side: 'right' });
+            await swiftee.react('wrong', why, { side: 'right' });
             api.clearMarks(); api.busy(false);
           }
         }
@@ -261,7 +261,7 @@
     title: 'Which One is Bigger?',
     sub: 'Wider is not always larger — <em class="h">height</em> counts too.',
     async enter(ctx) {
-      const { nibi, board } = ctx;
+      const { swiftee, board } = ctx;
       const g = board.fresh('compare');
 
 
@@ -289,8 +289,8 @@
         grp.addEventListener('click', () => pick(it.id));
       });
 
-      nibi.place(640, 600, true).resize(146).set('curious');
-      await nibi.say('Careful — the <b>wider</b> one isn’t always the bigger one.', { side: 'up', dx: -180 });
+      swiftee.place(640, 600, true).resize(146).set('curious');
+      await swiftee.say('Careful — the <b>wider</b> one isn’t always the bigger one.', { side: 'up', dx: -180 });
 
       const done = ctx.once();
       let answered = false;
@@ -306,20 +306,20 @@
         answered = true;
         ch.busy(true); ch.lock();
         ctx.sfx('click');
-        nibi.hush();
+        swiftee.hush();
         ch.mark(id, id === 'I' ? 'ok' : 'near');
 
-        /* Nibi reacts while the middle of the stage is still empty */
+        /* Swiftee reacts while the middle of the stage is still empty */
         if (id === 'I') {
-          nibi.set('correct'); nibi.squash(); ctx.sfx('ok');
-          await nibi.say('Let’s check them both and see.', { side: 'up', dx: -120 });
+          swiftee.set('correct'); swiftee.squash(); ctx.sfx('ok');
+          await swiftee.say('Let’s check them both and see.', { side: 'up', dx: -120 });
         } else {
-          nibi.set('incorrect'); ctx.sfx('near');
-          await nibi.say('It does look longer… let’s work them both out.', { side: 'up', dx: -170 });
+          swiftee.set('incorrect'); ctx.sfx('near');
+          await swiftee.say('It does look longer… let’s work them both out.', { side: 'up', dx: -170 });
         }
         await ctx.wait(450);
-        nibi.hush();
-        await nibi.to(1152, 600, { sig: ctx.sig, then: 'listening', size: 123, arc: 18 });
+        swiftee.hush();
+        await swiftee.to(1152, 600, { sig: ctx.sig, then: 'listening', size: 123, arc: 18 });
 
         /* three passes: sums, then heights, then areas — so the learner
            sees II win the first round and lose the one that matters      */
@@ -339,17 +339,17 @@
         });
         ctx.sfx('reveal');
         await ctx.wait(900);
-        nibi.set('surprised');
-        await nibi.say('Trapezium <b>II</b> has the bigger sum…', { side: 'left', w: 220, hold: 1100 });
+        swiftee.set('surprised');
+        await swiftee.say('Trapezium <b>II</b> has the bigger sum…', { side: 'left', w: 220, hold: 1100 });
 
-        nibi.hush();
+        swiftee.hush();
         rows.forEach(r => { r.l2.style.opacity = 1; UI.appear(r.l2, { dy: 6 }); });
         ctx.sfx('reveal');
         await ctx.wait(700);
-        nibi.set('realization');
-        await nibi.say('…but <b>I</b> is much taller.', { side: 'left', w: 200, hold: 1100 });
+        swiftee.set('realization');
+        await swiftee.say('…but <b>I</b> is much taller.', { side: 'left', w: 200, hold: 1100 });
 
-        nibi.hush();
+        swiftee.hush();
         rows.forEach(r => { r.l3.style.opacity = 1; UI.appear(r.l3, { dy: 6 }); });
         ctx.sfx('ok');
 
@@ -364,8 +364,8 @@
 
         ctx.head('Which One is Bigger?',
           '<em>Trapezium I</em> wins — 650 cm² against 525 cm². Height counts as much as width.');
-        if (id === 'I') { nibi.set('celebrate'); nibi.squash(); ctx.sfx('win'); }
-        else nibi.set('encouraging');
+        if (id === 'I') { swiftee.set('celebrate'); swiftee.squash(); ctx.sfx('win'); }
+        else swiftee.set('encouraging');
         done.resolve();
       }
 
@@ -382,7 +382,7 @@
     title: 'Remember!',
     sub: 'Three things to take with you.',
     async enter(ctx) {
-      const { nibi } = ctx;
+      const { swiftee } = ctx;
 
 
       const mini = (build) => G.miniSvg(112, 78, build);
@@ -432,11 +432,11 @@
         setTimeout(() => NL.Sound.playShape('shape'), 160 + i * 200);
       });
 
-      nibi.place(1352, 766, true).resize(179).set('idle');
+      swiftee.place(1352, 766, true).resize(179).set('idle');
       await ctx.wait(760);
-      nibi.set('proud'); nibi.squash();
+      swiftee.set('proud'); swiftee.squash();
       NL.Sound.playComplete();
-      await nibi.say('You didn’t memorise that formula —<br>you <b>built</b> it. 💙', { side: 'left', w: 250 });
+      await swiftee.say('You didn’t memorise that formula —<br>you <b>built</b> it. 💚', { side: 'left', w: 250 });
 
       ctx.show(UI.btn('Start again', () => NL.Lesson.restart(), { box: { cx: 640, b: 34 } }), { delay: 400 });
       await new Promise(() => {});   /* the lesson ends here */

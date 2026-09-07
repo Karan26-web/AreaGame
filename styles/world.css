@@ -1,6 +1,6 @@
 /* ============================================================
    The world — a layered Mars environment built from one flat
-   vector plate (assets/bgm.png). The plate is drawn three times
+   vector plate (assets/mars-plate.webp). The plate is drawn three times
    and clipped into horizontal bands, so sky, mid-ground and
    terrain can settle in one after another and drift at different
    rates. Once seated the bands are pixel-identical to the plate.
@@ -13,7 +13,7 @@
 
 .w-layer {
   position: absolute; inset: -2% -3%;
-  background-image: url("../assets/bgm.png");
+  background-image: url("../assets/mars-plate.webp");
   background-size: cover;
   background-position: 50% 62%;
   will-change: transform, opacity;
@@ -147,10 +147,10 @@
     rgba(47,93,52,0), rgba(47,93,52,.24) 12%, rgba(47,93,52,.24) 88%, rgba(47,93,52,0));
 }
 
-/* --- Nibi shares the panel's coordinates, without its clipping --- */
-#nibi-space {
+/* --- Swiftee shares the panel's coordinates, without its clipping --- */
+#swiftee-space {
   position: absolute; left: 120px; top: 212px;
   width: 1280px; height: 720px;
   overflow: visible; pointer-events: none; z-index: 6;
 }
-#nibi-layer { position: absolute; inset: 0; }
+#swiftee-layer { position: absolute; inset: 0; }

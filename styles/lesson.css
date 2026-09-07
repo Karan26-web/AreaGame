@@ -18,7 +18,11 @@ body {
 
 .layer { position: absolute; inset: 0; }
 #board       { z-index: 1; overflow: visible; }
-#ui-layer    { z-index: 3; }
+/* The UI layer covers the whole card, so it has to be transparent to the
+   pointer — otherwise it swallows every tap meant for the SVG board
+   underneath it (the tappable sides, the shape cards). Its contents opt
+   back in. */
+#ui-layer    { z-index: 3; pointer-events: none; }
 #ui-layer > * { pointer-events: auto; }
 #fx-layer    { z-index: 4; pointer-events: none; }
 
@@ -69,12 +73,12 @@ body {
   position: relative; font-family: var(--font); font-size: 19px; font-weight: var(--fw-bold);
   color: #fff; border: none; cursor: pointer;
   padding: 14px 30px; border-radius: 16px;
-  background: linear-gradient(180deg, #5a89ea, var(--brand));
-  box-shadow: 0 3px 0 var(--brand-deep), 0 8px 18px rgba(47,92,186,.24);
+  background: linear-gradient(180deg, var(--brand-lift), var(--brand));
+  box-shadow: 0 3px 0 var(--brand-deep), 0 8px 18px rgba(var(--brand-rgb),.24);
   transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), opacity var(--t-fast);
 }
-.btn:hover  { transform: translateY(-2px); box-shadow: 0 5px 0 var(--brand-deep), 0 12px 24px rgba(47,92,186,.28); }
-.btn:active { transform: translateY(1px); box-shadow: 0 1px 0 var(--brand-deep), 0 4px 10px rgba(47,92,186,.22); }
+.btn:hover  { transform: translateY(-2px); box-shadow: 0 5px 0 var(--brand-deep), 0 12px 24px rgba(var(--brand-rgb),.28); }
+.btn:active { transform: translateY(1px); box-shadow: 0 1px 0 var(--brand-deep), 0 4px 10px rgba(var(--brand-rgb),.22); }
 .btn[disabled] { opacity: .4; cursor: default; transform: none; box-shadow: 0 3px 0 var(--brand-deep); }
 .btn.ghost {
   color: var(--ink-2); background: var(--card); border: 1.5px solid var(--line);
@@ -83,8 +87,8 @@ body {
 .btn.ghost:hover { color: var(--ink); border-color: #d8ccb5; box-shadow: var(--sh-2); }
 .btn.small { font-size: 16px; padding: 10px 20px; border-radius: 13px; }
 @keyframes ctaGlow {
-  0%, 100% { box-shadow: 0 3px 0 var(--brand-deep), 0 8px 18px rgba(47,92,186,.24); }
-  50%      { box-shadow: 0 3px 0 var(--brand-deep), 0 12px 30px rgba(47,92,186,.52); }
+  0%, 100% { box-shadow: 0 3px 0 var(--brand-deep), 0 8px 18px rgba(var(--brand-rgb),.24); }
+  50%      { box-shadow: 0 3px 0 var(--brand-deep), 0 12px 30px rgba(var(--brand-rgb),.52); }
 }
 .btn.cta-next { animation: ctaGlow 1.7s var(--ease) 700ms 2; }
 .btn-abs { position: absolute; }
@@ -289,40 +293,45 @@ body {
 .bubble.tail-br::after { right: 22px; bottom: -8px; border-top: none; border-left: none; }
 .bubble.tail-l::after  { left: -8px; top: 50%; margin-top: -7px; border-top: none; border-right: none; }
 .bubble.tail-r::after  { right: -8px; top: 50%; margin-top: -7px; border-bottom: none; border-left: none; }
-.bubble.tail-tl::after { left: 22px; top: -8px; border-bottom: none; border-right: none; }
 
-/* ---------- Nibi ---------- */
-#nibi {
+/* ---------- Swiftee ----------
+   #swiftee is a zero-size anchor at Swiftee's FEET. The cell below it is
+   a slice of a uniform sprite sheet, so it is square and reaches a little
+   past the foot line; the body pulls it back up onto the ground.
+   One transform per element: anchor travels, body bobs, flip mirrors,
+   cell takes the flourishes — a CSS animation beats inline style, so
+   sharing an element would drop whichever transform JS had set.        */
+#swiftee {
   position: absolute; left: 0; top: 0; width: 0; height: 0;
   transition: transform var(--t-slow) var(--ease-out);
   will-change: transform;
 }
-#nibi.instant { transition: none; }
-.nibi-body {
-  position: absolute; left: 0; bottom: 0; transform: translateX(-50%);
+#swiftee.instant { transition: none; }
+.swiftee-body {
+  position: absolute; left: 0; transform: translateX(-50%);
   transition: opacity var(--t-ui) var(--ease);
-  transform-origin: 50% 100%;
 }
-.nibi-shadow {
+.swiftee-flip { display: block; }
+.swiftee-cell {
+  display: block;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 4px 10px rgba(20,70,66,.20));
+}
+.swiftee-shadow {
   position: absolute; left: 0; bottom: -6px; width: 74px; height: 13px;
   transform: translateX(-50%);
   background: radial-gradient(50% 50% at 50% 50%, rgba(70,52,26,.24), rgba(70,52,26,0) 70%);
   transition: opacity var(--t-ui), width var(--t-ui);
 }
-#nibi img {
-  display: block; height: auto;
-  transform-origin: 50% 100%;
-  filter: drop-shadow(0 4px 10px rgba(52,74,140,.18));
-}
-#nibi.hidden { opacity: 0; }
-.nibi-anim-bob   { animation: bob 3.1s ease-in-out infinite; }
-.nibi-anim-squash{ animation: squash .62s var(--ease-back); }
-.nibi-anim-hop   { animation: hop .52s var(--ease-out); }
-.nibi-anim-shake { animation: nibiShake .5s var(--ease); }
-.nibi-anim-pop   { animation: nibiPop .42s var(--ease-back); }
+#swiftee.hidden { opacity: 0; }
+.swiftee-anim-bob   { animation: bob 3.1s ease-in-out infinite; }
+.swiftee-anim-squash{ animation: squash .62s var(--ease-back); }
+.swiftee-anim-hop   { animation: hop .52s var(--ease-out); }
+.swiftee-anim-shake { animation: swifteeShake .5s var(--ease); }
+/* bob carries the body's own centring, or the animation would drop it */
 @keyframes bob {
-  0%,100% { transform: translateY(0)   scaleY(1)    }
-  50%     { transform: translateY(-5px) scaleY(1.02) }
+  0%,100% { transform: translateX(-50%) translateY(0)    scaleY(1)    }
+  50%     { transform: translateX(-50%) translateY(-5px) scaleY(1.02) }
 }
 @keyframes squash {
   0%   { transform: scale(1,1) }
@@ -338,15 +347,10 @@ body {
   85%  { transform: translateY(0) scale(1.1,.9) }
   100% { transform: translateY(0) scale(1,1) }
 }
-@keyframes nibiShake {
+@keyframes swifteeShake {
   0%,100% { transform: rotate(0) }
   20% { transform: rotate(-6deg) } 40% { transform: rotate(5deg) }
   60% { transform: rotate(-4deg) } 80% { transform: rotate(3deg) }
-}
-@keyframes nibiPop {
-  0%   { transform: scale(.4) translateY(18px); opacity: 0 }
-  60%  { transform: scale(1.07) translateY(0);  opacity: 1 }
-  100% { transform: scale(1) }
 }
 
 /* ---------- SVG diagram language ---------- */
@@ -366,7 +370,7 @@ body {
 .edge.hgt { stroke: var(--hgt); stroke-dasharray: 10 8; stroke-width: 4; }
 .edge.slant { stroke: var(--warn); }
 .edge.soft{ stroke: var(--slant); }
-/* blue is the interaction colour, on the diagram as well as in the UI */
+/* the brand teal is the interaction colour, on the diagram as in the UI */
 .edge.tapzone {
   stroke: var(--brand); stroke-width: 8; stroke-linecap: round;
   transition: opacity 200ms var(--ease), stroke-width 200ms var(--ease);

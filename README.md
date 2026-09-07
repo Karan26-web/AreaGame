@@ -1,4 +1,4 @@
-# Area of a Trapezium — an interactive lesson with Nibi
+# Area of a Trapezium — an interactive lesson with Swiftee
 
 A 16-stage animated maths lesson for Grade 8, played inside a small Mars
 world. Zero dependencies, zero build step.
@@ -14,23 +14,23 @@ python3 -m http.server 8000
 
 The lesson is a composition, not a page: a full-bleed Mars environment, a
 heading set on the sky, and a learning panel placed into the world with
-Nibi able to step outside it onto the ground.
+Swiftee able to step outside it onto the ground.
 
 ```
-world (full viewport)          assets/bgm.png, drawn as three clipped bands
+world (full viewport)          assets/mars-plate.webp, drawn as three clipped bands
 └── canvas 1520 x 1010         uniformly scaled + centred
     ├── heading                stage title + subtitle, set on the sky
     ├── #card 1280 x 720       the learning panel — every stage's coordinate space
     │   └── #progress          a 4px hairline along its foot — no numbers, no labels
-    └── #nibi-space            the panel's coordinates, without its clipping
+    └── #swiftee-space         the panel's coordinates, without its clipping
 ```
 
 ### The panel is a place
 
 `.stage-floor` puts a work surface across the bottom of the panel at y=640
 (y=600 in panel coordinates): a soft band with a hairline along its top edge.
-Nibi stands **on** it, the geometry floats **above** it, and the buttons live
-on the apron **below** it. Every Nibi stance in the lesson is snapped to that
+Swiftee stands **on** it, the geometry floats **above** it, and the buttons live
+on the apron **below** it. Every Swiftee stance in the lesson is snapped to that
 one ground line, which is what stops the character floating in white space.
 
 ### Sound that carries meaning
@@ -58,14 +58,14 @@ when several arrive together. A shape only grows chrome — a soft ring — whil
 something is happening to it: blue when selected, green when right, amber when
 it is worth another look.
 
-`#nibi-space` is the trick that lets Nibi belong to the world: it shares the
+`#swiftee-space` is the trick that lets Swiftee belong to the world: it shares the
 panel's origin, so stage code keeps using panel coordinates, but nothing
-clips it — `y > 720` puts Nibi on the Mars ground below the panel, `x > 1280`
+clips it — `y > 720` puts Swiftee on the Mars ground below the panel, `x > 1280`
 beside it.
 
 ### Layered depth from one plate
 
-`bgm.png` is drawn three times and clipped into bands (sky · distant relief ·
+`mars-plate.webp` is drawn three times and clipped into bands (sky · distant relief ·
 terrain). During the opening each band fades and settles a beat apart, so a
 single flat asset reads as a layered environment; once seated the bands are
 pixel-identical to the original. Pointer parallax moves them 5 / 11 / 18 px,
@@ -74,7 +74,7 @@ and dust motes 26 px, which is enough for depth and little enough to ignore.
 ### Opening sequence
 
 `NL.Lesson.open()` runs before stage 1: sky → relief → terrain → atmosphere →
-Nibi walks in across the ground and looks at you → the panel is placed into
+Swiftee flies in across the ground and looks at you → the panel is placed into
 the world → the heading writes itself → the lesson begins. About five seconds.
 
 ## Sound
@@ -97,7 +97,7 @@ one toggle silences everything without changing any behaviour.
 | 04 | Spot them all | multi-selects every trapezium in a grid of six quadrilaterals |
 | 05 | The family | taps each of right-angled / isosceles / scalene |
 | 06 | What is area? | taps the shape to flood it with unit squares |
-| 07 | a, b and h | picks the real height after Nibi's own mistake |
+| 07 | a, b and h | picks the real height after Swiftee's own mistake |
 | 08 | Build the formula | flips a copy into a parallelogram, works out its base |
 | 09 | The formula | taps each letter to see where it lives on the shape |
 | 10 | In your own words | matches `a + b` and `h` to their meanings |
@@ -112,7 +112,7 @@ Two misconceptions are taught explicitly rather than marked wrong:
 
 * **a parallelogram is not a trapezium** — stage 03 traces both pairs of
   parallel sides and counts them out loud;
-* **the slanted side is not the height** — in stage 07 *Nibi* grabs the
+* **the slanted side is not the height** — in stage 07 *Swiftee* grabs the
   slanted side first, catches itself, stands that side upright next to the
   perpendicular and shows it poking out over the top.
 
@@ -125,7 +125,7 @@ One palette, four roles, applied everywhere:
 | shape body | pale yellow `#faefa6` with a deep-green `#2f5d34` outline | every polygon |
 | parallel sides (a, b) | deep green `#2f5d34`, italic labels, mid-edge arrows | edges, labels, `<em>` in a subtitle |
 | perpendicular height (h) | violet `#6849c9`, dashed, right-angle marker | never confusable with a parallel side |
-| interaction | blue `#4a7ce6` (Nibi's own colour) | CTAs, selection |
+| interaction | teal `#159289` (Swiftee's own plumage) | CTAs, selection |
 
 Feedback borrows the same green for *correct* and a warm amber for *look
 again* — never red. A stage's subtitle uses `<em>` / `<em class="h">` so the
@@ -149,12 +149,14 @@ src/core/audio.js          NL.Sound — the sound manager (synthesised)
 src/core/lesson.js         LessonShell: stage registry, transitions, progress
 src/components/world.js    NL.World — layered Mars, parallax, dust sweeps
 src/components/geometry.js NL.Geo — shapes, dimension lines, markers
-src/components/nibi.js     NL.Nibi — the character system
+src/components/swiftee.data.js  generated sheet manifest (see tools/)
+src/components/swiftee.js  NL.Swiftee — the character system
 src/components/ui.js       copy, buttons, choices, cards, formulas, drag & drop
 src/stages/act1.js         stages 01-05
 src/stages/act2.js         stages 06-11
 src/stages/act3.js         stages 12-16
-assets/nibi/*.png          60 frames cut from the supplied sprite sheet
+assets/swiftee/*.webp      24 animation sheets + the poster atlas
+tools/build_swiftee_assets.py   rebuilds the two lines above from the sprite pack
 ```
 
 ### Stages are async functions
@@ -198,33 +200,67 @@ That is why the trapezium in stages 06→10 never moves, never re-fades and
 keeps the tint it gained when the learner first filled it — labels,
 copies and dimensions arrive around a shape that stays put.
 
-### Nibi
+### Swiftee
 
-`src/components/nibi.js` maps semantic states onto sprite frames
-(`idle` and `walk` are frame loops, everything else is a single frame) and
-exposes:
+`src/components/swiftee.js` maps the lesson's **semantic states** onto the
+character's **animation clips**, and exposes:
 
 ```js
-nibi.set('point-right');            // sprite state, optional flip
-nibi.to(x, y, {then: 'listening'}); // walk/arc to a spot, feet-anchored
-nibi.say('That’s the height!');     // auto-sided bubble, kept inside the stage
-nibi.react('ok' | 'wrong', line);   // reaction + sound + squash/shake
-nibi.squash(); nibi.hop();
+swiftee.set('point-right');            // semantic state, optional flip
+swiftee.to(x, y, {then: 'listening'}); // travel to a spot, feet-anchored
+swiftee.say('That’s the height!');     // auto-sided bubble, kept inside the stage
+swiftee.react('ok' | 'wrong', line);   // reaction + sound + squash/shake
+swiftee.squash(); swiftee.hop();
 ```
 
-Nibi is positioned by its feet, lives on its own layer between the diagram
+Swiftee is positioned by its feet, lives on its own layer between the diagram
 and the text, and is placed per stage so it never covers a formula, an
 answer or a measurement.
 
-### Sprite extraction
+Stages never name a clip. They ask for `celebrate`, `measuring`, `incorrect`,
+and the component decides what that looks like — which is what let the whole
+character be swapped without touching a single stage.
 
-The supplied sheets (`assets/nibi.png`, `assets/nibi2.png`) are labelled
-contact sheets on tinted panels, so the frames were cut once, background
-removed and written to `assets/nibi/` as transparent PNGs at 2×. Frame names
-map 1:1 to the sheet's own labels (`pointLeft`, `morphSplit`, `realization`…).
+### Expressions
+
+27 states, 16 looping clips. States share a clip wherever the lesson's
+distinction is one of *words*, not of face: `explaining` and `teaching` are
+both `talking`, `correct` and `encouraging` are both `happy`. Two choices are
+deliberate:
+
+* **there is no sad pose.** A miss reads as `confused` — "hm, not quite" —
+  never as disappointment. The character is puzzled *with* the learner.
+* **direction is a mirror, not a pose.** Swiftee is drawn front-on and raises
+  one wing, so `point-left` and `point-right` are the same clip flipped, and
+  the wing always ends up on the side the diagram is.
+
+A state may play a one-shot **lead-in** before settling into its loop, so a
+reaction lands as a beat rather than a jump cut (`surprised_start` →
+`surprised`). If that lead-in has not streamed in yet it is skipped: a beat is
+worth less than a stall.
+
+### Sprite pipeline
+
+The character ships as uniform sprite sheets — every frame of every clip in
+the same 256px cell with the pivot at the exact cell centre — so clips are
+interchangeable and Swiftee never shifts a pixel between them. The component
+leans on that hard: **one** scale, measured from the standing idle, drives
+every clip, which is why a jump reads as a jump rather than a resize.
+
+`tools/build_swiftee_assets.py` takes the sprite pack and emits only what the
+lesson can reach: 24 sheets as **lossless WebP** (flat vector art with alpha —
+about a third of the shipped PNG8, and far smaller than lossy WebP, which
+wastes bits on the hard edges), one `poster.webp` holding a still of every clip
+for the frame or two before a sheet decodes, and `swiftee.data.js` carrying the
+grids and measured ink boxes as plain JS, so the component needs no fetch and
+no async boot.
+
+Clips stream: six core ones load immediately, the rest trickle in after
+`load`, and any state asked for early shows its poster still until its sheet
+lands.
 
 ## Reuse for another lesson
 
-`NL.Geo`, `NL.UI`, `NL.Nibi`, `NL.Anim` and the lesson shell carry no
+`NL.Geo`, `NL.UI`, `NL.Swiftee`, `NL.Anim` and the lesson shell carry no
 trapezium-specific logic. A new lesson is a new file of
 `NL.Lesson.register({...})` calls plus its own shape maths.
